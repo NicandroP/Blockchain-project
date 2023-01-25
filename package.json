@@ -1,0 +1,1 @@
+{"type":"module","name":"pinatajs","version":"1.0.0","description":"","main":"index.js","scripts":{"test":"echo \"Error: no test specified\" && exit 1"},"keywords":[],"author":"","license":"ISC","dependencies":{"axios":"^1.2.3","ipfs":"^0.66.0","ipfs-core":"^0.18.0","shelljs":"^0.8.5"}}

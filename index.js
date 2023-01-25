@@ -29,10 +29,11 @@ async function main() {
     const node = await IPFS.create()
     
     const chunks = []
-    for await (const chunk of node.cat("bafkreicjmxc2drbgxtoidx6xfatbffyx46oiyo6ktipss6dhdermwtsoze", {timeout: 1000})) {
+    for await (const chunk of node.cat("bafkreidgev6bvk2bf3fdg33iwnhwh3einwb3f3bid2qjne5b33tmqrrsfa")) {
       chunks.push(chunk)
     }
     var dict=Buffer.concat(chunks).toString();
+    console.log(dict)
     //var dictstring = JSON.stringify(dict);
     fs.writeFile("JSONs/thing.json", dict, function(err, result) {
         if(err) console.log('error', err);
