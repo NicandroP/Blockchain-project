@@ -1,8 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import axios from 'axios';
 import {Preferences} from '@capacitor/preferences';
-
-
+import * as IPFS from 'ipfs-core';
 
 @Injectable({
   providedIn: 'root'
@@ -58,15 +57,12 @@ export class PinataHTTPService  {
       },
       data : data
     };
-console.log(config)
-const res = await axios(config);
+    console.log(config)
+    const res = await axios(config);
 
-return res.data
-
-
+    return res.data
 
   }
-
 
   async getAllKeys() {
     var config = {
@@ -84,10 +80,12 @@ return res.data
 
   async getCIDS() {
     var date1 = new Date()
+    var pubKey= await Preferences.get({key:'PublicKey'})
     console.log (date1.getHours() + ":" + date1.getMinutes() + ":" + date1.getSeconds() + "." + date1.getMilliseconds())
     var config = {
       method: 'get',
-      url: 'https://api.pinata.cloud/data/pinList',
+      url: 
+      'https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][customKey]={"value":"'+pubKey.value+'", "op":"eq"}',
       headers: {
         'Authorization': this.auth
       }
@@ -98,7 +96,7 @@ return res.data
     var response = await axios(config)
     var date1 = new Date()
     console.log (date1.getHours() + ":" + date1.getMinutes() + ":" + date1.getSeconds() + "." + date1.getMilliseconds())
-    return response
+    return response.data
   }
 
   async uploadJSON(fileToUpload: any) {
@@ -112,9 +110,24 @@ return res.data
       },
       data: fileToUpload
     }
+    console.log(config)
     
     return await axios(config)
   }
+
+   async getFileByCID(cid:any){
+      var config={
+        method: 'get',
+        url: 'https://ipfs.io/ipfs/'+cid,
+      }
+      return await axios(config)
+   }//https://gateway.pinata.cloud/ipfs/
+
+   //usare libreria httpclient-ipfs
+   //abilitare CORS
+
+
+
 
 
 }

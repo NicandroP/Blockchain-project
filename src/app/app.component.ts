@@ -14,7 +14,9 @@ export class AppComponent implements OnInit {
     
   }
   async ngOnInit() {
-    Preferences.clear()
+    //Preferences.clear()
+    
+    Preferences.set({key:"firstRun",value: "false"})
     const key = await Preferences.get({key:"Auth"})
     if (key.value == null) {
       await Preferences.set({key:"Auth", value:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmYmJmNzhjYS04N2Y4LTQzNjctYTcyMi0yZWZiZTQ1ZWM2ODEiLCJlbWFpbCI6InByb2plY3RibG9ja2NoYWluMjAyM0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiOGYxNzE1ZTdlMTU0ZWYzM2NlNzAiLCJzY29wZWRLZXlTZWNyZXQiOiI3NDM1YWZmNjY4NmUzOWYyNmNmOGU1MmQ4YjE1NWE4YjFkNTc1ZTM5OWI2NDEwNGIzMDkxYjhiZGU3NzM1MTU4IiwiaWF0IjoxNjc0NTU3ODEyfQ.ZBC2rQPDgbLx3jvo1BT2wpREFOWcV92W4n0gbz3XIa0"})
@@ -24,7 +26,7 @@ export class AppComponent implements OnInit {
     }
     //console.log(await Preferences.get({key:"Auth"}))
 
-    Preferences.set({key:"firstRun",value: "true"})
+    //Preferences.set({key:"firstRun",value: "true"})
     let firstRun = await Preferences.get({key: "firstRun"})
     
     
@@ -131,8 +133,8 @@ export class AppComponent implements OnInit {
       this.showTabs= true
 
     } 
-    console.log("PROVA")
-     
+    Preferences.set({key:'firstRun',value:'false'})
+    this.showTabs=true     
   }
 
   crea_password(){
