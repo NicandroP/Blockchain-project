@@ -1,0 +1,7 @@
+{
+  "name": "projectBlockchain",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

@@ -7,25 +7,26 @@ const SIZE_OFFSET = -4;
 // Runtime ids
 const ARRAYBUFFER_ID = 0;
 const STRING_ID = 1;
-const ARRAYBUFFERVIEW_ID = 2;
+// const ARRAYBUFFERVIEW_ID = 2;
 
 // Runtime type information
 const ARRAYBUFFERVIEW = 1 << 0;
 const ARRAY = 1 << 1;
-const SET = 1 << 2;
-const MAP = 1 << 3;
-const VAL_ALIGN_OFFSET = 5;
-const VAL_ALIGN = 1 << VAL_ALIGN_OFFSET;
-const VAL_SIGNED = 1 << 10;
-const VAL_FLOAT = 1 << 11;
-const VAL_NULLABLE = 1 << 12;
-const VAL_MANAGED = 1 << 13;
-const KEY_ALIGN_OFFSET = 14;
-const KEY_ALIGN = 1 << KEY_ALIGN_OFFSET;
-const KEY_SIGNED = 1 << 19;
-const KEY_FLOAT = 1 << 20;
-const KEY_NULLABLE = 1 << 21;
-const KEY_MANAGED = 1 << 22;
+const STATICARRAY = 1 << 2;
+// const SET = 1 << 3;
+// const MAP = 1 << 4;
+const VAL_ALIGN_OFFSET = 6;
+// const VAL_ALIGN = 1 << VAL_ALIGN_OFFSET;
+const VAL_SIGNED = 1 << 11;
+const VAL_FLOAT = 1 << 12;
+// const VAL_NULLABLE = 1 << 13;
+const VAL_MANAGED = 1 << 14;
+// const KEY_ALIGN_OFFSET = 15;
+// const KEY_ALIGN = 1 << KEY_ALIGN_OFFSET;
+// const KEY_SIGNED = 1 << 20;
+// const KEY_FLOAT = 1 << 21;
+// const KEY_NULLABLE = 1 << 22;
+// const KEY_MANAGED = 1 << 23;
 
 // Array(BufferView) layout
 const ARRAYBUFFERVIEW_BUFFER_OFFSET = 0;
@@ -43,8 +44,8 @@ const CHUNKSIZE = 1024;
 function getStringImpl(buffer, ptr) {
   const U32 = new Uint32Array(buffer);
   const U16 = new Uint16Array(buffer);
-  var length = U32[(ptr + SIZE_OFFSET) >>> 2] >>> 1;
-  var offset = ptr >>> 1;
+  let length = U32[(ptr + SIZE_OFFSET) >>> 2] >>> 1;
+  let offset = ptr >>> 1;
   if (length <= CHUNKSIZE) return String.fromCharCode.apply(String, U16.subarray(offset, offset + length));
   const parts = [];
   do {
@@ -58,7 +59,7 @@ function getStringImpl(buffer, ptr) {
 
 /** Prepares the base module prior to instantiation. */
 function preInstantiate(imports) {
-  const baseModule = {};
+  const extendedExports = {};
 
   function getString(memory, ptr) {
     if (!memory) return "<yet unknown>";
@@ -67,28 +68,31 @@ function preInstantiate(imports) {
 
   // add common imports used by stdlib for convenience
   const env = (imports.env = imports.env || {});
-  env.abort = env.abort || function abort(mesg, file, line, colm) {
-    const memory = baseModule.memory || env.memory; // prefer exported, otherwise try imported
-    throw Error("abort: " + getString(memory, mesg) + " at " + getString(memory, file) + ":" + line + ":" + colm);
-  }
-  env.trace = env.trace || function trace(mesg, n) {
-    const memory = baseModule.memory || env.memory;
-    console.log("trace: " + getString(memory, mesg) + (n ? " " : "") + Array.prototype.slice.call(arguments, 2, 2 + n).join(", "));
-  }
+  env.abort = env.abort || function abort(msg, file, line, colm) {
+    const memory = extendedExports.memory || env.memory; // prefer exported, otherwise try imported
+    throw Error("abort: " + getString(memory, msg) + " at " + getString(memory, file) + ":" + line + ":" + colm);
+  };
+  env.trace = env.trace || function trace(msg, n) {
+    const memory = extendedExports.memory || env.memory;
+    console.log("trace: " + getString(memory, msg) + (n ? " " : "") + Array.prototype.slice.call(arguments, 2, 2 + n).join(", "));
+  };
+  env.seed = env.seed || function seed() {
+    return Date.now();
+  };
   imports.Math = imports.Math || Math;
   imports.Date = imports.Date || Date;
 
-  return baseModule;
+  return extendedExports;
 }
 
 /** Prepares the final module once instantiation is complete. */
-function postInstantiate(baseModule, instance) {
-  const rawExports = instance.exports;
-  const memory = rawExports.memory;
-  const table = rawExports.table;
-  const alloc = rawExports["__alloc"];
-  const retain = rawExports["__retain"];
-  const rttiBase = rawExports["__rtti_base"] || ~0; // oob if not present
+function postInstantiate(extendedExports, instance) {
+  const exports = instance.exports;
+  const memory = exports.memory;
+  const table = exports.table;
+  const alloc = exports["__alloc"];
+  const retain = exports["__retain"];
+  const rttiBase = exports["__rtti_base"] || ~0; // oob if not present
 
   /** Gets the runtime type info for the given id. */
   function getInfo(id) {
@@ -112,9 +116,9 @@ function postInstantiate(baseModule, instance) {
   }
 
   /** Gets the runtime alignment of a collection's keys. */
-  function getKeyAlign(info) {
-    return 31 - Math.clz32((info >>> KEY_ALIGN_OFFSET) & 31); // -1 if none
-  }
+  // function getKeyAlign(info) {
+  //   return 31 - Math.clz32((info >>> KEY_ALIGN_OFFSET) & 31); // -1 if none
+  // }
 
   /** Allocates a new string in the module's memory and returns its retained pointer. */
   function __allocString(str) {
@@ -125,7 +129,7 @@ function postInstantiate(baseModule, instance) {
     return ptr;
   }
 
-  baseModule.__allocString = __allocString;
+  extendedExports.__allocString = __allocString;
 
   /** Reads a string from the module's memory by its pointer. */
   function __getString(ptr) {
@@ -135,7 +139,7 @@ function postInstantiate(baseModule, instance) {
     return getStringImpl(buffer, ptr);
   }
 
-  baseModule.__getString = __getString;
+  extendedExports.__getString = __getString;
 
   /** Gets the view matching the specified alignment, signedness and floatness. */
   function getView(alignLog2, signed, float) {
@@ -159,43 +163,50 @@ function postInstantiate(baseModule, instance) {
   /** Allocates a new array in the module's memory and returns its retained pointer. */
   function __allocArray(id, values) {
     const info = getInfo(id);
-    if (!(info & (ARRAYBUFFERVIEW | ARRAY))) throw Error("not an array: " + id + " @ " + info);
+    if (!(info & (ARRAYBUFFERVIEW | ARRAY | STATICARRAY))) throw Error("not an array: " + id + ", flags= " + info);
     const align = getValueAlign(info);
     const length = values.length;
-    const buf = alloc(length << align, ARRAYBUFFER_ID);
-    const arr = alloc(info & ARRAY ? ARRAY_SIZE : ARRAYBUFFERVIEW_SIZE, id);
-    const U32 = new Uint32Array(memory.buffer);
-    U32[arr + ARRAYBUFFERVIEW_BUFFER_OFFSET >>> 2] = retain(buf);
-    U32[arr + ARRAYBUFFERVIEW_DATASTART_OFFSET >>> 2] = buf;
-    U32[arr + ARRAYBUFFERVIEW_DATALENGTH_OFFSET >>> 2] = length << align;
-    if (info & ARRAY) U32[arr + ARRAY_LENGTH_OFFSET >>> 2] = length;
+    const buf = alloc(length << align, info & STATICARRAY ? id : ARRAYBUFFER_ID);
+    let result;
+    if (info & STATICARRAY) {
+      result = buf;
+    } else {
+      const arr = alloc(info & ARRAY ? ARRAY_SIZE : ARRAYBUFFERVIEW_SIZE, id);
+      const U32 = new Uint32Array(memory.buffer);
+      U32[arr + ARRAYBUFFERVIEW_BUFFER_OFFSET >>> 2] = retain(buf);
+      U32[arr + ARRAYBUFFERVIEW_DATASTART_OFFSET >>> 2] = buf;
+      U32[arr + ARRAYBUFFERVIEW_DATALENGTH_OFFSET >>> 2] = length << align;
+      if (info & ARRAY) U32[arr + ARRAY_LENGTH_OFFSET >>> 2] = length;
+      result = arr;
+    }
     const view = getView(align, info & VAL_SIGNED, info & VAL_FLOAT);
     if (info & VAL_MANAGED) {
       for (let i = 0; i < length; ++i) view[(buf >>> align) + i] = retain(values[i]);
     } else {
       view.set(values, buf >>> align);
     }
-    return arr;
+    return result;
   }
 
-  baseModule.__allocArray = __allocArray;
+  extendedExports.__allocArray = __allocArray;
 
   /** Gets a live view on an array's values in the module's memory. Infers the array type from RTTI. */
   function __getArrayView(arr) {
     const U32 = new Uint32Array(memory.buffer);
     const id = U32[arr + ID_OFFSET >>> 2];
     const info = getInfo(id);
-    if (!(info & ARRAYBUFFERVIEW)) throw Error("not an array: " + id);
+    if (!(info & (ARRAYBUFFERVIEW | ARRAY | STATICARRAY))) throw Error("not an array: " + id + ", flags=" + info);
     const align = getValueAlign(info);
-    var buf = U32[arr + ARRAYBUFFERVIEW_DATASTART_OFFSET >>> 2];
+    let buf = info & STATICARRAY
+      ? arr
+      : U32[arr + ARRAYBUFFERVIEW_DATASTART_OFFSET >>> 2];
     const length = info & ARRAY
       ? U32[arr + ARRAY_LENGTH_OFFSET >>> 2]
       : U32[buf + SIZE_OFFSET >>> 2] >>> align;
-    return getView(align, info & VAL_SIGNED, info & VAL_FLOAT)
-          .subarray(buf >>>= align, buf + length);
+    return getView(align, info & VAL_SIGNED, info & VAL_FLOAT).subarray(buf >>>= align, buf + length);
   }
 
-  baseModule.__getArrayView = __getArrayView;
+  extendedExports.__getArrayView = __getArrayView;
 
   /** Copies an array's values from the module's memory. Infers the array type from RTTI. */
   function __getArray(arr) {
@@ -206,7 +217,7 @@ function postInstantiate(baseModule, instance) {
     return out;
   }
 
-  baseModule.__getArray = __getArray;
+  extendedExports.__getArray = __getArray;
 
   /** Copies an ArrayBuffer's value from the module's memory. */
   function __getArrayBuffer(ptr) {
@@ -215,7 +226,7 @@ function postInstantiate(baseModule, instance) {
     return buffer.slice(ptr, ptr + length);
   }
 
-  baseModule.__getArrayBuffer = __getArrayBuffer;
+  extendedExports.__getArrayBuffer = __getArrayBuffer;
 
   /** Copies a typed array's values from the module's memory. */
   function getTypedArray(Type, alignLog2, ptr) {
@@ -230,89 +241,88 @@ function postInstantiate(baseModule, instance) {
     return new Type(buffer, bufPtr, U32[bufPtr + SIZE_OFFSET >>> 2] >>> alignLog2);
   }
 
-  baseModule.__getInt8Array = getTypedArray.bind(null, Int8Array, 0);
-  baseModule.__getInt8ArrayView = getTypedArrayView.bind(null, Int8Array, 0);
-  baseModule.__getUint8Array = getTypedArray.bind(null, Uint8Array, 0);
-  baseModule.__getUint8ArrayView = getTypedArrayView.bind(null, Uint8Array, 0);
-  baseModule.__getUint8ClampedArray = getTypedArray.bind(null, Uint8ClampedArray, 0);
-  baseModule.__getUint8ClampedArrayView = getTypedArrayView.bind(null, Uint8ClampedArray, 0);
-  baseModule.__getInt16Array = getTypedArray.bind(null, Int16Array, 1);
-  baseModule.__getInt16ArrayView = getTypedArrayView.bind(null, Int16Array, 1);
-  baseModule.__getUint16Array = getTypedArray.bind(null, Uint16Array, 1);
-  baseModule.__getUint16ArrayView = getTypedArrayView.bind(null, Uint16Array, 1);
-  baseModule.__getInt32Array = getTypedArray.bind(null, Int32Array, 2);
-  baseModule.__getInt32ArrayView = getTypedArrayView.bind(null, Int32Array, 2);
-  baseModule.__getUint32Array = getTypedArray.bind(null, Uint32Array, 2);
-  baseModule.__getUint32ArrayView = getTypedArrayView.bind(null, Uint32Array, 2);
-  if (BIGINT) {
-    baseModule.__getInt64Array = getTypedArray.bind(null, BigInt64Array, 3);
-    baseModule.__getInt64ArrayView = getTypedArrayView.bind(null, BigInt64Array, 3);
-    baseModule.__getUint64Array = getTypedArray.bind(null, BigUint64Array, 3);
-    baseModule.__getUint64ArrayView = getTypedArrayView.bind(null, BigUint64Array, 3);
+  /** Attach a set of get TypedArray and View functions to the exports. */
+  function attachTypedArrayFunctions(ctor, name, align) {
+    extendedExports["__get" + name] = getTypedArray.bind(null, ctor, align);
+    extendedExports["__get" + name + "View"] = getTypedArrayView.bind(null, ctor, align);
   }
-  baseModule.__getFloat32Array = getTypedArray.bind(null, Float32Array, 2);
-  baseModule.__getFloat32ArrayView = getTypedArrayView.bind(null, Float32Array, 2);
-  baseModule.__getFloat64Array = getTypedArray.bind(null, Float64Array, 3);
-  baseModule.__getFloat64ArrayView = getTypedArrayView.bind(null, Float64Array, 3);
+
+  [
+    Int8Array,
+    Uint8Array,
+    Uint8ClampedArray,
+    Int16Array,
+    Uint16Array,
+    Int32Array,
+    Uint32Array,
+    Float32Array,
+    Float64Array
+  ].forEach(ctor => {
+    attachTypedArrayFunctions(ctor, ctor.name, 31 - Math.clz32(ctor.BYTES_PER_ELEMENT));
+  });
+
+  if (BIGINT) {
+    [BigUint64Array, BigInt64Array].forEach(ctor => {
+      attachTypedArrayFunctions(ctor, ctor.name.slice(3), 3);
+    });
+  }
 
   /** Tests whether an object is an instance of the class represented by the specified base id. */
   function __instanceof(ptr, baseId) {
     const U32 = new Uint32Array(memory.buffer);
-    var id = U32[(ptr + ID_OFFSET) >>> 2];
+    let id = U32[(ptr + ID_OFFSET) >>> 2];
     if (id <= U32[rttiBase >>> 2]) {
-      do if (id == baseId) return true;
-      while (id = getBase(id));
+      do {
+        if (id == baseId) return true;
+        id = getBase(id);
+      } while (id);
     }
     return false;
   }
 
-  baseModule.__instanceof = __instanceof;
+  extendedExports.__instanceof = __instanceof;
 
-  // Pull basic exports to baseModule so code in preInstantiate can use them
-  baseModule.memory = baseModule.memory || memory;
-  baseModule.table  = baseModule.table  || table;
+  // Pull basic exports to extendedExports so code in preInstantiate can use them
+  extendedExports.memory = extendedExports.memory || memory;
+  extendedExports.table  = extendedExports.table  || table;
 
   // Demangle exports and provide the usual utility on the prototype
-  return demangle(rawExports, baseModule);
+  return demangle(exports, extendedExports);
 }
 
-function isResponse(o) {
-  return typeof Response !== "undefined" && o instanceof Response;
+function isResponse(src) {
+  return typeof Response !== "undefined" && src instanceof Response;
+}
+
+function isModule(src) {
+  return src instanceof WebAssembly.Module;
 }
 
 /** Asynchronously instantiates an AssemblyScript module from anything that can be instantiated. */
-async function instantiate(source, imports) {
+async function instantiate(source, imports = {}) {
   if (isResponse(source = await source)) return instantiateStreaming(source, imports);
-  return postInstantiate(
-    preInstantiate(imports || (imports = {})),
-    await WebAssembly.instantiate(
-      source instanceof WebAssembly.Module
-        ? source
-        : await WebAssembly.compile(source),
-      imports
-    )
-  );
+  const module = isModule(source) ? source : await WebAssembly.compile(source);
+  const extended = preInstantiate(imports);
+  const instance = await WebAssembly.instantiate(module, imports);
+  const exports = postInstantiate(extended, instance);
+  return { module, instance, exports };
 }
 
 exports.instantiate = instantiate;
 
 /** Synchronously instantiates an AssemblyScript module from a WebAssembly.Module or binary buffer. */
-function instantiateSync(source, imports) {
-  return postInstantiate(
-    preInstantiate(imports || (imports = {})),
-    new WebAssembly.Instance(
-      source instanceof WebAssembly.Module
-        ? source
-        : new WebAssembly.Module(source),
-      imports
-    )
-  )
+function instantiateSync(source, imports = {}) {
+  const module = isModule(source) ? source : new WebAssembly.Module(source);
+  const extended = preInstantiate(imports);
+  const instance = new WebAssembly.Instance(module, imports);
+  const exports = postInstantiate(extended, instance);
+  return { module, instance, exports };
 }
 
 exports.instantiateSync = instantiateSync;
 
 /** Asynchronously instantiates an AssemblyScript module from a response, i.e. as obtained by `fetch`. */
-async function instantiateStreaming(source, imports) {
+async function instantiateStreaming(source, imports = {}) {
   if (!WebAssembly.instantiateStreaming) {
     return instantiate(
       isResponse(source = await source)
@@ -321,25 +331,25 @@ async function instantiateStreaming(source, imports) {
       imports
     );
   }
-  return postInstantiate(
-    preInstantiate(imports || (imports = {})),
-    (await WebAssembly.instantiateStreaming(source, imports)).instance
-  );
+  const extended = preInstantiate(imports);
+  const result = await WebAssembly.instantiateStreaming(source, imports);
+  const exports = postInstantiate(extended, result.instance);
+  return { ...result, exports };
 }
 
 exports.instantiateStreaming = instantiateStreaming;
 
 /** Demangles an AssemblyScript module's exports to a friendly object structure. */
-function demangle(exports, baseModule) {
-  var module = baseModule ? Object.create(baseModule) : {};
-  var setArgumentsLength = exports["__argumentsLength"]
-    ? function(length) { exports["__argumentsLength"].value = length; }
-    : exports["__setArgumentsLength"] || exports["__setargc"] || function() {};
+function demangle(exports, extendedExports = {}) {
+  extendedExports = Object.create(extendedExports);
+  const setArgumentsLength = exports["__argumentsLength"]
+    ? length => { exports["__argumentsLength"].value = length; }
+    : exports["__setArgumentsLength"] || exports["__setargc"] || (() => { /* nop */ });
   for (let internalName in exports) {
     if (!Object.prototype.hasOwnProperty.call(exports, internalName)) continue;
     const elem = exports[internalName];
     let parts = internalName.split(".");
-    let curr = module;
+    let curr = extendedExports;
     while (parts.length > 1) {
       let part = parts.shift();
       if (!Object.prototype.hasOwnProperty.call(curr, part)) curr[part] = {};
@@ -348,10 +358,10 @@ function demangle(exports, baseModule) {
     let name = parts[0];
     let hash = name.indexOf("#");
     if (hash >= 0) {
-      let className = name.substring(0, hash);
-      let classElem = curr[className];
+      const className = name.substring(0, hash);
+      const classElem = curr[className];
       if (typeof classElem === "undefined" || !classElem.prototype) {
-        let ctor = function(...args) {
+        const ctor = function(...args) {
           return ctor.wrap(ctor.prototype.constructor(0, ...args));
         };
         ctor.prototype = {
@@ -411,7 +421,7 @@ function demangle(exports, baseModule) {
       }
     }
   }
-  return module;
+  return extendedExports;
 }
 
 exports.demangle = demangle;
