@@ -9,15 +9,21 @@ import { PinataHTTPService } from './pinata-http.service';
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
+
 export class AppComponent implements OnInit {
   showTabs = false
   constructor(private alertController: AlertController, private pinataHTTP: PinataHTTPService) {
     
   }
-  async ngOnInit() {
+  async ngOnInit(){
     //Preferences.clear()
+    this.firstRun()
+      
+  }
+  async firstRun() {
     
-    Preferences.set({key:"firstRun",value: "false"})
+    
+    //Preferences.set({key:"firstRun",value: "true"})
     const key = await Preferences.get({key:"Auth"})
     if (key.value == null) {
       await Preferences.set({key:"Auth", value:"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmYmJmNzhjYS04N2Y4LTQzNjctYTcyMi0yZWZiZTQ1ZWM2ODEiLCJlbWFpbCI6InByb2plY3RibG9ja2NoYWluMjAyM0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiOGYxNzE1ZTdlMTU0ZWYzM2NlNzAiLCJzY29wZWRLZXlTZWNyZXQiOiI3NDM1YWZmNjY4NmUzOWYyNmNmOGU1MmQ4YjE1NWE4YjFkNTc1ZTM5OWI2NDEwNGIzMDkxYjhiZGU3NzM1MTU4IiwiaWF0IjoxNjc0NTU3ODEyfQ.ZBC2rQPDgbLx3jvo1BT2wpREFOWcV92W4n0gbz3XIa0"})
@@ -29,7 +35,7 @@ export class AppComponent implements OnInit {
 
     //Preferences.set({key:"firstRun",value: "true"})
     let firstRun = await Preferences.get({key: "firstRun"})
-    
+    console.log(firstRun.value)
     
     if (firstRun.value == "true") {
       
@@ -125,16 +131,23 @@ export class AppComponent implements OnInit {
 
         })
         await alert.present();
+        await alert.onDidDismiss();
 
       }
       
       
     } else {
+      if(firstRun.value=="false"){
+        this.showTabs= true
+      }else{
+        console.log("dio")
+        await Preferences.set({key:"firstRun",value:'true'})
+        console.log((await Preferences.get({key:"firstRun"})).value)
+        this.firstRun()
+      }
       
-      this.showTabs= true
-
     } 
-    Preferences.set({key:'firstRun',value:'false'})
+    await Preferences.set({key:'firstRun',value:'false'})
     this.showTabs=true     
   }
 

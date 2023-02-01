@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
 import { PinataHTTPService } from '../pinata-http.service';
 
@@ -7,11 +7,20 @@ import { PinataHTTPService } from '../pinata-http.service';
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss']
 })
-export class Tab2Page {
+export class Tab2Page implements OnInit {
   valore1=""
   valore2= ""
-  readOnlyMode = true
+  readOnlyMode = false
   constructor(private pinataHTTP: PinataHTTPService) {}
+  
+  async ngOnInit() {
+      let appMode=await Preferences.get({key:"appMode"})
+      if(appMode.value=="writer"){
+        this.readOnlyMode=false
+      }else{
+        this.readOnlyMode=true
+      }
+  }
 
 
   async clickUpload() {
@@ -23,14 +32,15 @@ export class Tab2Page {
     console.log(JSONToUpload)
     console.log(this.pinataHTTP.uploadJSON(JSONToUpload))
 
+    this.valore1=""
+    this.valore2=""
 
   }
   
-
   async createJSON() {
     var pKey=await Preferences.get({key:'PublicKey'})
     var date=new Date()
-    var name=pKey.value+" ,"+date.getFullYear()+" "+date.getMonth()+1+" "+date.getDate()+":"+date.getHours() + ":" + date.getMinutes()+" "+date.getSeconds()
+    var name=pKey.value+", "+date.getFullYear()+", "+(parseInt(String(date.getMonth()))+1)+", "+date.getDate()+", "+date.getHours() + ": " + date.getMinutes()+" "+date.getSeconds()
     console.log(name)
     var JSONToUpload = ""
     JSONToUpload = JSON.stringify({

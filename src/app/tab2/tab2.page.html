@@ -7,9 +7,16 @@
 </ion-header>
 
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" *ngIf="readOnlyMode">
+  SEI UN LETTORE 
 
-  <ion-list *ngIf = "readOnlyMode">
+</ion-content>
+
+<div *ngIf="readOnlyMode;else elseblock">
+  
+</div>
+<ng-template #elseblock>
+  <ion-list>
 
     <ion-item>
       <ion-label fixed>VALORE 1</ion-label>
@@ -24,5 +31,5 @@
   </ion-list>
 
   <button ion-button color="light" (click)="clickUpload()">UPLOAD FILE</button>
-
-</ion-content>
+  
+</ng-template>

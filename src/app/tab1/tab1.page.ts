@@ -17,21 +17,19 @@ export class Tab1Page implements OnInit{
   }
 
   async ngOnInit() {
-    
-    //var res = await this.pinataHTTP.getAllKeys()
-    //var res = await this.pinataHTTP.generateNewAdminKey()
-    //console.log(res)
+     
+  }
+  async ionViewWillEnter() {
     this.items=await this.pinataHTTP.getCIDS()
     this.items=this.items.rows
     console.log("files pinnati su pinata: "+this.items.length)
     this.array=new Array()
-    this.item=await this.pinataHTTP.getFileByCID(this.items[0].ipfs_pin_hash);
+    console.log(this.items)
     for(let i=0;i<this.items.length;i++){
       this.item=await this.pinataHTTP.getFileByCID(this.items[i].ipfs_pin_hash)
-      this.array.push(this.item)                                                                                 
+      this.array.push(this.item)                                                                            
     }
     console.log(this.array)
-     
   }
 
 }

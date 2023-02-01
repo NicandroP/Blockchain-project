@@ -3,7 +3,7 @@ import axios from 'axios';
 import {Preferences} from '@capacitor/preferences';
 import {create} from 'ipfs-http-client';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
  
 @Injectable({
   providedIn: 'root'
@@ -115,8 +115,15 @@ export class PinataHTTPService  {
     return await axios(config)
   }
   async getFileByCID(cid:any){
+    return new Promise((resolve)=>{
+      this.http.get('https://ipfs.io/ipfs/'+cid).subscribe({
+        next:async data=>{
+          resolve(data)
+        }
+      })
+    })
     
-    return this.http.get('https://ipfs.io/ipfs/'+cid).toPromise();
+    
   }
     
 }
