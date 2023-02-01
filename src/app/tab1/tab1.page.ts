@@ -10,6 +10,8 @@ import { Preferences } from '@capacitor/preferences';
 })
 export class Tab1Page implements OnInit{
   items:any
+  item:any
+  array:any
   constructor(private pinataHTTP: PinataHTTPService, private storage: LocalStorageService ) {
 
   }
@@ -21,13 +23,16 @@ export class Tab1Page implements OnInit{
     //console.log(res)
     this.items=await this.pinataHTTP.getCIDS()
     this.items=this.items.rows
-    console.log(this.items[1].ipfs_pin_hash)
-    console.log(this.pinataHTTP.getFileByCID(this.items[1].ipfs_pin_hash))
-    //ci interssa ipfs_pin_hash
-    
-
+    console.log("files pinnati su pinata: "+this.items.length)
+    this.array=new Array()
+    this.item=await this.pinataHTTP.getFileByCID(this.items[0].ipfs_pin_hash);
+    for(let i=0;i<this.items.length;i++){
+      this.item=await this.pinataHTTP.getFileByCID(this.items[i].ipfs_pin_hash)
+      this.array.push(this.item)                                                                                 
+    }
+    console.log(this.array)
+     
   }
-
 
 }
   

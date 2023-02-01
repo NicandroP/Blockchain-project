@@ -1,8 +1,10 @@
 import { Injectable, OnInit } from '@angular/core';
 import axios from 'axios';
 import {Preferences} from '@capacitor/preferences';
-import * as IPFS from 'ipfs-core';
-
+import {create} from 'ipfs-http-client';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+ 
 @Injectable({
   providedIn: 'root'
 })
@@ -11,14 +13,12 @@ export class PinataHTTPService  {
   //AUTH CHIAVE ADMIN 1
   //auth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmYmJmNzhjYS04N2Y4LTQzNjctYTcyMi0yZWZiZTQ1ZWM2ODEiLCJlbWFpbCI6InByb2plY3RibG9ja2NoYWluMjAyM0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiOGYxNzE1ZTdlMTU0ZWYzM2NlNzAiLCJzY29wZWRLZXlTZWNyZXQiOiI3NDM1YWZmNjY4NmUzOWYyNmNmOGU1MmQ4YjE1NWE4YjFkNTc1ZTM5OWI2NDEwNGIzMDkxYjhiZGU3NzM1MTU4IiwiaWF0IjoxNjc0NTU3ODEyfQ.ZBC2rQPDgbLx3jvo1BT2wpREFOWcV92W4n0gbz3XIa0"
   auth = ""
-
   //AUTH CHIAVE ADMIN 2
   //auth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmYmJmNzhjYS04N2Y4LTQzNjctYTcyMi0yZWZiZTQ1ZWM2ODEiLCJlbWFpbCI6InByb2plY3RibG9ja2NoYWluMjAyM0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZmM4ODhmMDkyNWY2NTY2ZDM5NWYiLCJzY29wZWRLZXlTZWNyZXQiOiJhMWIwODIzNDA2YzU4ODMzMzY4MWU3ZmM0YzMxMzlkYjMzOTAyNTgwMDdhOGMzMDBjNzUxMzc2OWYzZDgxYjQxIiwiaWF0IjoxNjc0OTAzNDQzfQ.7t0VRu_ys3hb5kQF7WuXX2SliqG98GV5jyn1wtmBeSk"
-  constructor() {
+  
+  constructor(private http: HttpClient) {
     
-   }
-
-
+  }
 
   changeAuthKey(key:string) {
     this.auth = key
@@ -114,20 +114,9 @@ export class PinataHTTPService  {
     
     return await axios(config)
   }
-
-   async getFileByCID(cid:any){
-      var config={
-        method: 'get',
-        url: 'https://ipfs.io/ipfs/'+cid,
-      }
-      return await axios(config)
-   }//https://gateway.pinata.cloud/ipfs/
-
-   //usare libreria httpclient-ipfs
-   //abilitare CORS
-
-
-
-
-
+  async getFileByCID(cid:any){
+    
+    return this.http.get('https://ipfs.io/ipfs/'+cid).toPromise();
+  }
+    
 }

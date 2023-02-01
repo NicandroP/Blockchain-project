@@ -3,6 +3,7 @@ import {Preferences} from '@capacitor/preferences'
 import { AlertController } from '@ionic/angular';
 import { PinataHTTPService } from './pinata-http.service';
 
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
