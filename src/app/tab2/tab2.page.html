@@ -19,13 +19,28 @@
   <ion-list>
 
     <ion-item>
-      <ion-label fixed>VALORE 1</ion-label>
-      <ion-input [(ngModel)]="valore1" type="text" value=""></ion-input>
+      <ion-label fixed>Altezza (cm)</ion-label>
+      <ion-input [(ngModel)]="altezza" type="number" value="" (keypress)="numberOnlyValidation($event)"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-label fixed>VALORE 2</ion-label>
-      <ion-input [(ngModel)]="valore2" type="text" value = ""></ion-input>
+      <ion-label fixed>Peso (kg)</ion-label>
+      <ion-input [(ngModel)]="peso" type="number" value = "" (keypress)="numberOnlyValidation($event)"></ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label fixed>Età</ion-label>
+      <ion-input [(ngModel)]="eta" type="number" value = "" (keypress)="numberOnlyValidation($event)"></ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label fixed>Pressione min (mmHg)</ion-label>
+      <ion-input [(ngModel)]="pressioneMin" type="number" value = "" (keypress)="numberOnlyValidation($event)"></ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-label fixed>Pressione max (mmHg)</ion-label>
+      <ion-input [(ngModel)]="pressioneMax" type="number" value = "" (keypress)="numberOnlyValidation($event)"></ion-input>
     </ion-item>
 
   </ion-list>

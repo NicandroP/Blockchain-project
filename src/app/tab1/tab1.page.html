@@ -11,14 +11,15 @@
 
 
 <ion-item *ngFor="let item of array">
-    <ion-card>
+    <ion-card button button (click)="showCardDetails(item.eta)">
       <ion-card-header>
-        <ion-card-title>{{item.valore1}}</ion-card-title>
-        <ion-card-subtitle>{{item.valore2}}</ion-card-subtitle>
+        <ion-card-title>Altezza :{{item.altezza}}</ion-card-title>
+        <ion-card-subtitle>Peso: {{item.peso}}</ion-card-subtitle>
+        
       </ion-card-header>
     
       <ion-card-content>
-        Here's a small text description for the card content. Nothing more, nothing less.
+        {{item.data}}
       </ion-card-content>
     </ion-card>
   </ion-item>

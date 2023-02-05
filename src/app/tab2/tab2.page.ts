@@ -8,13 +8,16 @@ import { PinataHTTPService } from '../pinata-http.service';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page implements OnInit {
-  valore1=""
-  valore2= ""
+  altezza=""
+  peso= ""
+  eta= ""
+  pressioneMin= ""
+  pressioneMax= ""
   readOnlyMode = false
   constructor(private pinataHTTP: PinataHTTPService) {}
   
   async ngOnInit() {
-      let appMode=await Preferences.get({key:"appMode"})
+      let appMode=await Preferences.get({key:"AppMode"})
       if(appMode.value=="writer"){
         this.readOnlyMode=false
       }else{
@@ -25,22 +28,28 @@ export class Tab2Page implements OnInit {
 
   async clickUpload() {
 
-    console.log("VALORE 1 = ", this.valore1)
-    console.log("VALORE 2 = ", this.valore2)
+    console.log("Altezza = ", this.altezza)
+    console.log("Peso = ", this.peso)
+    console.log("Età = ", this.eta)
+    console.log("Pressione mix = ", this.pressioneMin)
+    console.log("Pressione max = ", this.pressioneMax)
     
     var JSONToUpload =await this.createJSON()
     console.log(JSONToUpload)
     console.log(this.pinataHTTP.uploadJSON(JSONToUpload))
 
-    this.valore1=""
-    this.valore2=""
+    this.altezza=""
+    this.peso=""
+    this.eta=""
+    this.pressioneMin=""
+    this.pressioneMax=""
 
   }
   
   async createJSON() {
     var pKey=await Preferences.get({key:'PublicKey'})
     var date=new Date()
-    var name=pKey.value+", "+date.getFullYear()+", "+(parseInt(String(date.getMonth()))+1)+", "+date.getDate()+", "+date.getHours() + ": " + date.getMinutes()+" "+date.getSeconds()
+    var name=pKey.value+", "+date.getDate()+"/"+(parseInt(String(date.getMonth()))+1)+"/"+date.getFullYear()+", "+date.getHours() + ":" + date.getMinutes()+":"+date.getSeconds()
     console.log(name)
     var JSONToUpload = ""
     JSONToUpload = JSON.stringify({
@@ -54,12 +63,26 @@ export class Tab2Page implements OnInit {
         }
       },
       "pinataContent": {
-        "valore1": this.valore1,
-        "valore2" : this.valore2
+        "altezza": this.altezza,
+        "peso" : this.peso,
+        "eta" : this.eta,
+        "pressioneMin" : this.pressioneMin,
+        "pressioneMax" : this.pressioneMax,
+        "data" : date.getDate()+"/"+(parseInt(String(date.getMonth()))+1)+"/"+date.getFullYear()+", "+date.getHours() + ":" + date.getMinutes()+":"+date.getSeconds()
       }
     });
 
     return JSONToUpload
   }
+  numberOnlyValidation(event: any) {
+    const pattern = /[0-9.,]/;
+    let inputChar = String.fromCharCode(event.charCode);
+
+    if (!pattern.test(inputChar)) {
+      // invalid character, prevent input
+      event.preventDefault();
+    }
+  }
+
 }
 

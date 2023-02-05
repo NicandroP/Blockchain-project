@@ -19,15 +19,19 @@ export class AppComponent implements OnInit {
     //Preferences.clear()
     await this.chekcFirstRun()
     this.showTabs = true
+
   }
 
   async chekcFirstRun() {
+
     var firstRun = await Preferences.get({key: "firstRun"})
 
     if (firstRun.value == "true") {
       //Non fare niente, non dovrebbe mai essere TRUE qui
     } else if (firstRun.value == "false") {
       this.showTabs = true
+      let val=await Preferences.get({key:'Auth'})
+      this.pinataHTTP.changeAuthKey(val.value)
     } else {
 
       await Preferences.set({key: "firstRun", value:"true"})
