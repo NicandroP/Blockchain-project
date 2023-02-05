@@ -37,13 +37,11 @@ export class Tab1Page implements OnInit{
       console.log(await axios(config))
     }
   }
-  async showCardDetails(eta:any){
+  async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any){
     const alert = await this.alertController.create({
-      header: eta,
-      subHeader: '1131331233',
-      message:'asdasd'
-
-
+      header: data,
+      subHeader: altezza,
+      message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax
     })
     await alert.present();
     await alert.onDidDismiss();
