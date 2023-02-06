@@ -33,15 +33,19 @@ export class Tab1Page implements OnInit{
         }
       };
 
-      let response=await axios(config)
-      console.log(response.data.encryptedString)
-      var password=await Preferences.get({key:'Password'})
-      var pw=password.value+""
-      var bytes = crypto.AES.decrypt(response.data.encryptedString, pw);//QUI VA GESTITO CHE SE LA PW É INCORRETTA BISOGNA GENERARE UN ERRORE
-      var plaintext = bytes.toString(crypto.enc.Utf8);
-      var jsonPlaintext=JSON.parse(plaintext)
-      console.log(jsonPlaintext);
-      this.array.push(jsonPlaintext)
+      let response=await axios(config).then(async response=>{
+        console.log(response.data.encryptedString)
+        var password=await Preferences.get({key:'Password'})
+        var pw=password.value+""
+        var bytes = crypto.AES.decrypt(response.data.encryptedString, pw);//QUI VA GESTITO CHE SE LA PW É INCORRETTA BISOGNA GENERARE UN ERRORE
+        var plaintext = bytes.toString(crypto.enc.Utf8);
+        var jsonPlaintext=JSON.parse(plaintext)
+        console.log(jsonPlaintext);
+        this.array.push(jsonPlaintext)
+      }).catch(error=>{
+        console.log(error)
+      })
+      
     }
   }
   async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any){
