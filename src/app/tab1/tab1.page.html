@@ -1,0 +1,29 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Tab 1
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  
+
+
+<ion-item *ngFor="let item of array">
+    <ion-card button button (click)="showCardDetails(item.data,item.altezza,item.peso,item.eta,item.pressioneMin,item.pressioneMax)">
+      <ion-card-header>
+        <ion-card-title>Altezza :{{item.altezza}}</ion-card-title>
+        <ion-card-subtitle>Peso: {{item.peso}}</ion-card-subtitle>
+        
+      </ion-card-header>
+    
+      <ion-card-content>
+        {{item.data}}
+      </ion-card-content>
+    </ion-card>
+  </ion-item>
+
+  
+
+</ion-content>
