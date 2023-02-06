@@ -4,6 +4,7 @@ import { LocalStorageService } from '../local-storage.service';
 import { PinataHTTPService } from '../pinata-http.service';
 import { Preferences } from '@capacitor/preferences';
 import { AlertController } from '@ionic/angular';
+import * as crypto from 'crypto-js';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -33,8 +34,14 @@ export class Tab1Page implements OnInit{
       };
 
       let response=await axios(config)
-      console.log(response.data)
-      this.array.push(response.data)
+      console.log(response.data.encryptedString)
+      var password=await Preferences.get({key:'Password'})
+      var pw=password.value+""
+      var bytes = crypto.AES.decrypt(response.data.encryptedString, pw);//QUI VA GESTITO CHE SE LA PW É INCORRETTA BISOGNA GENERARE UN ERRORE
+      var plaintext = bytes.toString(crypto.enc.Utf8);
+      var jsonPlaintext=JSON.parse(plaintext)
+      console.log(jsonPlaintext);
+      this.array.push(jsonPlaintext)
     }
   }
   async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any){
