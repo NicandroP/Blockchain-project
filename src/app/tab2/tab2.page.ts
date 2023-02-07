@@ -3,6 +3,7 @@ import { Preferences } from '@capacitor/preferences';
 import { type } from 'os';
 import { PinataHTTPService } from '../pinata-http.service';
 import * as crypto from 'crypto-js';
+import { AlertController } from '@ionic/angular';
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
@@ -15,7 +16,7 @@ export class Tab2Page implements OnInit {
   pressioneMin= ""
   pressioneMax= ""
   readOnlyMode = false
-  constructor(private pinataHTTP: PinataHTTPService) {}
+  constructor(private pinataHTTP: PinataHTTPService,private alertController: AlertController) {}
   
   async ngOnInit() {
     let appMode=await Preferences.get({key:"AppMode"})
@@ -28,25 +29,34 @@ export class Tab2Page implements OnInit {
 
 
   async clickUpload() {
+    if(this.altezza=='' && this.peso=='' && this.eta=='' && this.pressioneMin=='' && this.pressioneMax==''){
+      const alert = await this.alertController.create({
+        message:"Insert at least one value"
+      })
+      await alert.present();
+      await alert.onDidDismiss();
+    }else{
+      console.log("Altezza = ", this.altezza)
+      console.log("Peso = ", this.peso)
+      console.log("Età = ", this.eta)
+      console.log("Pressione mix = ", this.pressioneMin)
+      console.log("Pressione max = ", this.pressioneMax)
+      var JSONToUpload =await this.createJSON()
+  
+      //var bytes = crypto.AES.decrypt(encrypted.toString(), pw);
+      //var plaintext = bytes.toString(crypto.enc.Utf8);
+      //console.log(plaintext);
+      
+      console.log(this.pinataHTTP.uploadJSON(JSONToUpload))
+  
+      this.altezza=""
+      this.peso=""
+      this.eta=""
+      this.pressioneMin=""
+      this.pressioneMax=""
+    }
 
-    console.log("Altezza = ", this.altezza)
-    console.log("Peso = ", this.peso)
-    console.log("Età = ", this.eta)
-    console.log("Pressione mix = ", this.pressioneMin)
-    console.log("Pressione max = ", this.pressioneMax)
-    var JSONToUpload =await this.createJSON()
-
-    //var bytes = crypto.AES.decrypt(encrypted.toString(), pw);
-    //var plaintext = bytes.toString(crypto.enc.Utf8);
-    //console.log(plaintext);
     
-    console.log(this.pinataHTTP.uploadJSON(JSONToUpload))
-
-    this.altezza=""
-    this.peso=""
-    this.eta=""
-    this.pressioneMin=""
-    this.pressioneMax=""
 
   }
   

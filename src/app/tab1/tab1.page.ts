@@ -12,16 +12,22 @@ import * as crypto from 'crypto-js';
 })
 export class Tab1Page implements OnInit{
   array:any
+  elements=false
   constructor(private alertController: AlertController,private pinataHTTP: PinataHTTPService, private storage: LocalStorageService ) {
 
   }
 
   async ngOnInit() {
-     
+    await Preferences.set({key: "pinnedFiles", value:"0"})
   }
+
   async ionViewWillEnter() {
     this.array=new Array()
     const urls = await this.pinataHTTP.getCIDS()
+    let elementCount=urls.count
+    console.log("Files pinnati su pinata: "+elementCount)
+    await Preferences.set({key: "pinnedFiles", value:elementCount})
+    if(elementCount>0){this.elements=true}
     for (let i = 0; i<urls.count; i++){
       let url = urls.rows[i].ipfs_pin_hash
 
@@ -32,8 +38,9 @@ export class Tab1Page implements OnInit{
           'Accept': 'text/plain'
         }
       };
-
+      //axios.defaults.timeout = 1000;
       let response=await axios(config).then(async response=>{
+
         console.log(response.data.encryptedString)
         var password=await Preferences.get({key:'Password'})
         var pw=password.value+""
@@ -43,11 +50,12 @@ export class Tab1Page implements OnInit{
         console.log(jsonPlaintext);
         this.array.push(jsonPlaintext)
       }).catch(error=>{
-        console.log(error)
+        console.log("ERRORE: "+error)
       })
-      
-    }
+    
+    }  
   }
+
   async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any){
     const alert = await this.alertController.create({
       header: data,

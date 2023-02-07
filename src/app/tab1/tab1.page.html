@@ -6,9 +6,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  
-
+<ion-content [fullscreen]="true" *ngIf="elements">
 
 <ion-item *ngFor="let item of array">
     <ion-card button button (click)="showCardDetails(item.data,item.altezza,item.peso,item.eta,item.pressioneMin,item.pressioneMax)">
@@ -22,8 +20,11 @@
         {{item.data}}
       </ion-card-content>
     </ion-card>
-  </ion-item>
-
-  
-
+  </ion-item> 
 </ion-content>
+<div *ngIf="elements;else elseblock">
+  
+</div>
+<ng-template #elseblock>
+  No records present
+</ng-template>
