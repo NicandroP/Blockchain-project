@@ -13,6 +13,7 @@ import * as crypto from 'crypto-js';
 export class Tab1Page implements OnInit{
   array:any
   elements=false
+  isLoading=false
   constructor(private alertController: AlertController,private pinataHTTP: PinataHTTPService, private storage: LocalStorageService ) {
 
   }
@@ -28,7 +29,8 @@ export class Tab1Page implements OnInit{
     console.log("Files pinnati su pinata: "+elementCount)
     await Preferences.set({key: "pinnedFiles", value:elementCount})
     if(elementCount>0){this.elements=true}
-    for (let i = 0; i<urls.count; i++){
+    this.isLoading=true
+    for (let i = urls.count-1; i>=0; i--){
       let url = urls.rows[i].ipfs_pin_hash
 
       var config = {
@@ -38,7 +40,6 @@ export class Tab1Page implements OnInit{
           'Accept': 'text/plain'
         }
       };
-      //axios.defaults.timeout = 1000;
       let response=await axios(config).then(async response=>{
 
         console.log(response.data.encryptedString)
@@ -48,12 +49,16 @@ export class Tab1Page implements OnInit{
         var plaintext = bytes.toString(crypto.enc.Utf8);
         var jsonPlaintext=JSON.parse(plaintext)
         console.log(jsonPlaintext);
-        this.array.push(jsonPlaintext)
+        this.array.unshift(jsonPlaintext)
+        
+        
       }).catch(error=>{
         console.log("ERRORE: "+error)
       })
     
-    }  
+    }
+    this.isLoading=false
+    console.log("chiamata axios terminata")
   }
 
   async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any){

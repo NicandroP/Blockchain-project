@@ -47,8 +47,14 @@ export class Tab2Page implements OnInit {
       //var plaintext = bytes.toString(crypto.enc.Utf8);
       //console.log(plaintext);
       
-      console.log(this.pinataHTTP.uploadJSON(JSONToUpload))
-  
+      const loading = await this.alertController.create({
+        message:"uploading"
+      })
+      loading.present()
+      console.log((await this.pinataHTTP.uploadJSON(JSONToUpload)).status)
+      loading.dismiss()
+      console.log("loading closed")
+
       this.altezza=""
       this.peso=""
       this.eta=""
