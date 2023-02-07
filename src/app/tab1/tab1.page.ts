@@ -20,9 +20,11 @@ export class Tab1Page implements OnInit{
 
   async ngOnInit() {
     await Preferences.set({key: "pinnedFiles", value:"0"})
+    
   }
 
   async ionViewWillEnter() {
+    
     this.array=new Array()
     const urls = await this.pinataHTTP.getCIDS()
     let elementCount=urls.count

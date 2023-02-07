@@ -9,13 +9,11 @@ import { from, Observable, timeout } from 'rxjs';
   providedIn: 'root'
 })
 export class PinataHTTPService  {
-  data:any;
-  
-  //AUTH CHIAVE ADMIN 1
-  //auth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmYmJmNzhjYS04N2Y4LTQzNjctYTcyMi0yZWZiZTQ1ZWM2ODEiLCJlbWFpbCI6InByb2plY3RibG9ja2NoYWluMjAyM0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiOGYxNzE1ZTdlMTU0ZWYzM2NlNzAiLCJzY29wZWRLZXlTZWNyZXQiOiI3NDM1YWZmNjY4NmUzOWYyNmNmOGU1MmQ4YjE1NWE4YjFkNTc1ZTM5OWI2NDEwNGIzMDkxYjhiZGU3NzM1MTU4IiwiaWF0IjoxNjc0NTU3ODEyfQ.ZBC2rQPDgbLx3jvo1BT2wpREFOWcV92W4n0gbz3XIa0"
+  data:any
   auth = ""
-  //AUTH CHIAVE ADMIN 2
-  //auth = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmYmJmNzhjYS04N2Y4LTQzNjctYTcyMi0yZWZiZTQ1ZWM2ODEiLCJlbWFpbCI6InByb2plY3RibG9ja2NoYWluMjAyM0BnbWFpbC5jb20iLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwicGluX3BvbGljeSI6eyJyZWdpb25zIjpbeyJpZCI6IkZSQTEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX0seyJpZCI6Ik5ZQzEiLCJkZXNpcmVkUmVwbGljYXRpb25Db3VudCI6MX1dLCJ2ZXJzaW9uIjoxfSwibWZhX2VuYWJsZWQiOmZhbHNlLCJzdGF0dXMiOiJBQ1RJVkUifSwiYXV0aGVudGljYXRpb25UeXBlIjoic2NvcGVkS2V5Iiwic2NvcGVkS2V5S2V5IjoiZmM4ODhmMDkyNWY2NTY2ZDM5NWYiLCJzY29wZWRLZXlTZWNyZXQiOiJhMWIwODIzNDA2YzU4ODMzMzY4MWU3ZmM0YzMxMzlkYjMzOTAyNTgwMDdhOGMzMDBjNzUxMzc2OWYzZDgxYjQxIiwiaWF0IjoxNjc0OTAzNDQzfQ.7t0VRu_ys3hb5kQF7WuXX2SliqG98GV5jyn1wtmBeSk"
+  pinata_api_key: any
+  pinata_secret_api_key: any
+
   
   constructor(private http: HttpClient) {
     
@@ -25,11 +23,39 @@ export class PinataHTTPService  {
     this.auth = key
   }
 
+  setPublicKey(key:any){
+    this.pinata_api_key = key
+  }
+
+  setPrivateKey(key: any) {
+    this.pinata_secret_api_key = key
+  }
+
+  async tryToAuth(){
+    var config = {
+      method: 'get',
+      url: 'https://api.pinata.cloud/data/testAuthentication',
+      headers: { 
+        
+          'pinata_api_key' : '21355483b71d62be07f0',
+          'pinata_secret_api_key':'a200c296d03dea41340442aeac74291645b4d28d9acc63d63537cc727d193dca'
+      
+        
+      }
+    };
+    
+    const res = await axios(config)
+    
+    console.log(res);
+  }
+
   async generateNewAdminKey() {
     
     var data = JSON.stringify({
       "keyName": "My Key",
+      
       "permissions": {
+        
         "endpoints": {
           "data": {
             "pinList": true,
@@ -53,7 +79,8 @@ export class PinataHTTPService  {
       method: 'post',
       url: 'https://api.pinata.cloud/users/generateApiKey',
       headers: { 
-        'Authorization': this.auth, 
+        'pinata_api_key' : this.pinata_api_key,
+        'pinata_secret_api_key' : this.pinata_secret_api_key,
         'Content-Type': 'application/json'
       },
       data : data
@@ -70,7 +97,8 @@ export class PinataHTTPService  {
       method: 'get',
       url: 'https://api.pinata.cloud/users/apiKeys',
       headers: { 
-        'Authorization': this.auth
+        'pinata_api_key' : this.pinata_api_key,
+        'pinata_secret_api_key' : this.pinata_secret_api_key
       }
     };
 
@@ -81,17 +109,32 @@ export class PinataHTTPService  {
 
   async getCIDS() {
     var date1 = new Date()
-    var pubKey= await Preferences.get({key:'PublicKey'})
+    //TODO CAMBIARE IN PUBLIC KEY DELL'ID DA LEGGERE E NON LA PROPRIA 
+    var appMode = await Preferences.get({key:'AppMode'})
+    var writerPubKey
+    if (appMode.value == "reader") {
+       writerPubKey = await Preferences.get({key:'WriterPublicKey'})
+    } else {
+      writerPubKey = await Preferences.get({key:'PublicKey'})
+    }
+    
+      
+    
+    console.log(writerPubKey)
+    console.log(this.pinata_api_key)
+    console.log(this.pinata_secret_api_key)
     console.log (date1.getHours() + ":" + date1.getMinutes() + ":" + date1.getSeconds() + "." + date1.getMilliseconds())
     var config = {
       method: 'get',
-      url: 
-      'https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][customKey]={"value":"'+pubKey.value+'", "op":"eq"}',
+      url: 'https://api.pinata.cloud/data/pinList?status=pinned&metadata[keyvalues][customKey]={"value":"'+writerPubKey.value+'", "op":"eq"}',
       headers: {
-        'Authorization': this.auth
+        'pinata_api_key' : this.pinata_api_key,
+        'pinata_secret_api_key' : this.pinata_secret_api_key
       }
+    
     };
     //?status=pinned
+   
     var response = await axios(config)
     var date1 = new Date()
     console.log (date1.getHours() + ":" + date1.getMinutes() + ":" + date1.getSeconds() + "." + date1.getMilliseconds())
@@ -105,7 +148,8 @@ export class PinataHTTPService  {
       url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
       headers: {
         'Content-Type':'application/json',
-        'Authorization': this.auth
+        'pinata_api_key' : this.pinata_api_key,
+        'pinata_secret_api_key' : this.pinata_secret_api_key
       },
       data: fileToUpload
     }
