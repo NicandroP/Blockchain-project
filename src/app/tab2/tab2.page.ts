@@ -71,9 +71,22 @@ export class Tab2Page implements OnInit {
     var password=await Preferences.get({key:'Password'})
     var pw=password.value+""
     
-    
+    //displaying data in better way by adding 0 to 1 length values
     var date=new Date()
-    var name=pKey.value+", "+date.getDate()+"/"+(parseInt(String(date.getMonth()))+1)+"/"+date.getFullYear()+", "+date.getHours() + ":" + date.getMinutes()+":"+date.getSeconds()
+    var day=date.getDate().toString()
+    if(day.length==1){day="0"+day}
+    var month=date.getMonth()+1
+    let monthString=month.toString()
+    if(monthString.length==1){monthString="0"+monthString}
+    var hours=date.getHours().toString()
+    if(hours.length==1){hours="0"+hours}
+    var minutes=date.getMinutes().toString()
+    if(minutes.length==1){minutes="0"+minutes}
+    var seconds=date.getSeconds().toString()
+    if(seconds.length==1){seconds="0"+seconds}
+
+    var date2=day+"/"+monthString+"/"+date.getFullYear()+", "+hours + ":" + minutes+":"+seconds
+    var name=pKey.value+", "+date2
     
     var content=""
     content=JSON.stringify({
@@ -82,7 +95,7 @@ export class Tab2Page implements OnInit {
       "eta" : this.eta,
       "pressioneMin" : this.pressioneMin,
       "pressioneMax" : this.pressioneMax,
-      "data" : date.getDate()+"/"+(parseInt(String(date.getMonth()))+1)+"/"+date.getFullYear()+", "+date.getHours() + ":" + date.getMinutes()+":"+date.getSeconds()
+      "data" : date2
     })
     var encrypted = crypto.AES.encrypt(content.toString(), pw);
     var encryptedString=encrypted.toString()
