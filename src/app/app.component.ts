@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import {Preferences} from '@capacitor/preferences'
 import { AlertController } from '@ionic/angular';
 import { PinataHTTPService } from './pinata-http.service';
@@ -12,7 +13,7 @@ import { PinataHTTPService } from './pinata-http.service';
 
 export class AppComponent implements OnInit {
   showTabs = false
-  constructor(private alertController: AlertController, private pinataHTTP: PinataHTTPService) {
+  constructor(private alertController: AlertController, private pinataHTTP: PinataHTTPService, private router:Router) {
     
   }
   async ngOnInit(){

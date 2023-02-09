@@ -7,13 +7,39 @@ import { Preferences } from '@capacitor/preferences';
   styleUrls: ['tab3.page.scss']
 })
 export class Tab3Page implements OnInit {
-  pubKey:any
-  password:any
+  appMode: any
+  publicKey: any
+  privateKey: any
+  password: any
+  writerPublicKey: any
+
   constructor() {}
-  async ngOnInit(){
+
+  async ngOnInit(){}
+
+  async ionViewWillEnter() {
+    this.appMode = await Preferences.get({key:"AppMode"})
+
+    if (this.appMode.value  == "reader") {
+
+      this.writerPublicKey = await (await Preferences.get({key:"WriterPublicKey"})).value
+      this.password = await (await Preferences.get({key:"Password"})).value
+
+    } else {
+      this.publicKey = await (await Preferences.get({key:"PublicKey"})).value
+      this.privateKey = await (await Preferences.get({key:"PrivateKey"})).value
+      this.password = await (await Preferences.get({key:"Password"})).value
+    }
+
     
-    this.pubKey=(await Preferences.get({key:"PublicKey"})).value
-    this.password=(await Preferences.get({key:"Password"})).value
+
+  }
+  
+  async logoutButton() {
+    await Preferences.clear()
+    window.location.replace('/')
+    
+
   }
 
 
