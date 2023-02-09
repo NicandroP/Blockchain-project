@@ -30,7 +30,6 @@ export class Tab1Page implements OnInit{
 
   async ionViewWillEnter() {
     
-    this.array=new Array()
     this.newCids=new Array()
     const urls = await this.pinataHTTP.getCIDS()
     let elementCount=urls.count
@@ -51,6 +50,7 @@ export class Tab1Page implements OnInit{
     }
     if(this.arraysEqual(storedCids2,this.newCids)){
       console.log("cids uguali")
+      
     }else{
       console.log("cids diversi")
       this.array=[]
