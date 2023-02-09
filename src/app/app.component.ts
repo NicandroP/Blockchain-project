@@ -209,10 +209,10 @@ export class AppComponent implements OnInit {
 
   async firstRunReader() {
         //Inserisco valori per reader di default 
-        await Preferences.set({key:"PublicKey",value:"20ce92887e63a9cfdcee"})
-        await Preferences.set({key:"PrivateKey",value:"f917761c57a8ced1f3e4c373c08123225249e293f21d1a28d8f4685c74def1f1"})
-        await this.pinataHTTP.setPublicKey("20ce92887e63a9cfdcee")
-        await this.pinataHTTP.setPrivateKey("f917761c57a8ced1f3e4c373c08123225249e293f21d1a28d8f4685c74def1f1")
+        await Preferences.set({key:"PublicKey",value:"59fea9783aa051945645"})
+        await Preferences.set({key:"PrivateKey",value:"8fdac041e843d680f1d436a783fae0a6f610558479dce3906c144e60394650eb"})
+        await this.pinataHTTP.setPublicKey("59fea9783aa051945645")
+        await this.pinataHTTP.setPrivateKey("8fdac041e843d680f1d436a783fae0a6f610558479dce3906c144e60394650eb")
 
         const alert = await this.alertController.create({
           header: "Imposta la chiave e la password fornite dallo scrittore",

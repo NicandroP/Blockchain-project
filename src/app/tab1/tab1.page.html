@@ -6,7 +6,32 @@
   </ion-toolbar>
 </ion-header>
 
+
+  
+
+
+
 <ion-content [fullscreen]="true" *ngIf="elements">
+
+<ion-list>
+  <ion-item>
+    <ion-select (ionChange)="onChange()" [(ngModel)]="filterValue" interface="popover" placeholder="Filter by date">
+      <ion-select-option value="lastDay">Last day</ion-select-option>
+      <ion-select-option value="lastWeek">Last week</ion-select-option>
+      <ion-select-option value="lastMonth">Last month</ion-select-option>
+    </ion-select>
+    
+  </ion-item>
+  <ion-item>
+    <div *ngIf="filterIsActive">
+      <ion-button  (click)='removeSelection()'>
+         <ion-icon name='close'></ion-icon>
+      </ion-button>
+    </div>
+  </ion-item>
+  
+</ion-list>
+
 <div *ngIf="isLoading">
   LOADING
 </div>

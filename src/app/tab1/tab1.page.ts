@@ -5,17 +5,21 @@ import { PinataHTTPService } from '../pinata-http.service';
 import { Preferences } from '@capacitor/preferences';
 import { AlertController } from '@ionic/angular';
 import * as crypto from 'crypto-js';
+import moment from 'moment';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page implements OnInit{
+  
   array:any
   elements=false
   isLoading=false
   storedCids:any
   newCids:any
+  filterValue:any
+  filterIsActive=false
   constructor(private alertController: AlertController,private pinataHTTP: PinataHTTPService, private storage: LocalStorageService ) {
 
   }
@@ -133,9 +137,48 @@ export class Tab1Page implements OnInit{
       await alert.present();
       await alert.onDidDismiss();
     }
-    
-    
+   
+  }
 
+  async removeSelection(){
+    this.filterValue=null
+    console.log("Removed filter")
+  }
+  async onChange(){
+    if(this.filterValue=="lastDay" || this.filterValue=="lastWeek" || this.filterValue=="lastMonth"){
+      this.filterIsActive=true
+      let value=this.filterValue
+      console.log("Filtering file by: "+this.filterValue)
+      console.log(this.array)
+      
+      var currentTime = new Date();
+      var formattedCurrentTime = moment(currentTime).format('YYYYMMDD');
+      
+      var newArray = this.array.filter(function (el:any) {
+        let dataProva=new Date("01-01-2023")
+        let data=el.data.split(",")[0]
+        let data2=new Date(data.split("/")[1]+"-"+data.split("/")[0]+"-"+data.split("/")[2])
+        var data2Formatted=moment(data2).format('YYYYMMDD');
+        if(value=='lastDay'){
+          return data2Formatted==formattedCurrentTime
+        }
+        if(value=="lastWeek"){
+          let lastWeekDate=new Date()
+          lastWeekDate.setDate(lastWeekDate.getDate() - 7);
+          var lastWeekFormattedDate=moment(lastWeekDate).format('YYYYMMDD');
+          
+          return data2Formatted >= lastWeekFormattedDate && data2Formatted<=formattedCurrentTime
+        }else{
+          let lastMonthDate=new Date()
+          lastMonthDate.setDate(lastMonthDate.getDate() - 31);
+          var lastMonthFormattedDate=moment(lastMonthDate).format('YYYYMMDD');
+          return data2Formatted >= lastMonthFormattedDate && data2Formatted<=formattedCurrentTime
+        }
+        
+      });
+    }
+    console.log(newArray)
+    this.array=newArray
   }
 
 }
