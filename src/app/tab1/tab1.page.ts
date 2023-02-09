@@ -105,22 +105,36 @@ export class Tab1Page implements OnInit{
   }
 
   async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any,cid:any){
-    const alert = await this.alertController.create({
-      header: data,
-      subHeader: altezza,
-      message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax,
-      buttons: [
-        {
-          text: 'Delete',
-          role: 'cancel',
-          handler: async () => {
-            await this.pinataHTTP.removeFile(cid)
+    let appMode=await Preferences.get({key: "AppMode"})
+    if(appMode.value=="writer"){
+      const alert = await this.alertController.create({
+        header: data,
+        subHeader: altezza,
+        message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax,
+        buttons: [
+          {
+            text: 'Delete',
+            role: 'cancel',
+            handler: async () => {
+              await this.pinataHTTP.removeFile(cid)
+              this.ionViewWillEnter()
+            }
           }
-        }
-      ]
-    })
-    await alert.present();
-    await alert.onDidDismiss();
+        ]
+      })
+      await alert.present();
+      await alert.onDidDismiss();
+    }else{
+      const alert = await this.alertController.create({
+        header: data,
+        subHeader: altezza,
+        message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax,
+      })
+      await alert.present();
+      await alert.onDidDismiss();
+    }
+    
+    
 
   }
 
