@@ -75,6 +75,7 @@ export class Tab1Page implements OnInit{
           var plaintext = bytes.toString(crypto.enc.Utf8);
           var jsonPlaintext=JSON.parse(plaintext)
           console.log(jsonPlaintext);
+          jsonPlaintext.cid=url
           this.array.unshift(jsonPlaintext)
           
           
@@ -103,11 +104,20 @@ export class Tab1Page implements OnInit{
     return true;
   }
 
-  async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any){
+  async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any,cid:any){
     const alert = await this.alertController.create({
       header: data,
       subHeader: altezza,
-      message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax
+      message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax,
+      buttons: [
+        {
+          text: 'Delete',
+          role: 'cancel',
+          handler: async () => {
+            await this.pinataHTTP.removeFile(cid)
+          }
+        }
+      ]
     })
     await alert.present();
     await alert.onDidDismiss();

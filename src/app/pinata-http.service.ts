@@ -167,6 +167,20 @@ export class PinataHTTPService  {
       })
     })
   }
+
+  async removeFile(fileToRemove:any){
+    var config = {
+      method: 'delete',
+      url: 'https://api.pinata.cloud/pinning/unpin/'+fileToRemove,
+      headers: { 
+        'pinata_api_key' : this.pinata_api_key,
+        'pinata_secret_api_key' : this.pinata_secret_api_key
+      }
+    };
+    
+    const res = await axios(config);
+    console.log("File deleted: "+res.data)
+  }
   
     
 }
