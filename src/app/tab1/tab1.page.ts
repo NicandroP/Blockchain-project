@@ -81,7 +81,6 @@ export class Tab1Page implements OnInit{
           console.log(jsonPlaintext);
           jsonPlaintext.cid=url
           this.array.unshift(jsonPlaintext)
-          this.tempArray=this.array
           
           
         }).catch(error=>{
@@ -89,6 +88,7 @@ export class Tab1Page implements OnInit{
         })
       
       }
+      this.tempArray=this.array
       this.isLoading=false
       console.log("chiamata axios terminata")
     }
@@ -119,7 +119,6 @@ export class Tab1Page implements OnInit{
         buttons: [
           {
             text: 'Delete',
-            role: 'cancel',
             handler: async () => {
               await this.pinataHTTP.removeFile(cid)
               this.ionViewWillEnter()
@@ -142,6 +141,7 @@ export class Tab1Page implements OnInit{
   }
 
   async removeSelection(){
+    this.filterIsActive=false
     this.filterValue=null
     console.log("Removed filter")
     this.tempArray=this.array
