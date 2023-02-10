@@ -12,7 +12,7 @@ import moment from 'moment';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page implements OnInit{
-  
+  tempArray:any
   array:any
   elements=false
   isLoading=false
@@ -81,6 +81,7 @@ export class Tab1Page implements OnInit{
           console.log(jsonPlaintext);
           jsonPlaintext.cid=url
           this.array.unshift(jsonPlaintext)
+          this.tempArray=this.array
           
           
         }).catch(error=>{
@@ -143,13 +144,15 @@ export class Tab1Page implements OnInit{
   async removeSelection(){
     this.filterValue=null
     console.log("Removed filter")
+    this.tempArray=this.array
+    console.log(this.tempArray)
   }
   async onChange(){
+    let value=this.filterValue
     if(this.filterValue=="lastDay" || this.filterValue=="lastWeek" || this.filterValue=="lastMonth"){
       this.filterIsActive=true
-      let value=this.filterValue
+      
       console.log("Filtering file by: "+this.filterValue)
-      console.log(this.array)
       
       var currentTime = new Date();
       var formattedCurrentTime = moment(currentTime).format('YYYYMMDD');
@@ -177,8 +180,11 @@ export class Tab1Page implements OnInit{
         
       });
     }
-    console.log(newArray)
-    this.array=newArray
+    if(value!=undefined){
+      this.tempArray=newArray
+      console.log(this.tempArray)
+    }
+    
   }
 
 }

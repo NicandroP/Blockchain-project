@@ -13,7 +13,6 @@
 
 <ion-content [fullscreen]="true" *ngIf="elements">
 
-<ion-list>
   <ion-item>
     <ion-select (ionChange)="onChange()" [(ngModel)]="filterValue" interface="popover" placeholder="Filter by date">
       <ion-select-option value="lastDay">Last day</ion-select-option>
@@ -30,13 +29,13 @@
     </div>
   </ion-item>
   
-</ion-list>
+
 
 <div *ngIf="isLoading">
   LOADING
 </div>
 
-<ion-item *ngFor="let item of array">
+<ion-item *ngFor="let item of tempArray">
     <ion-card button button (click)="showCardDetails(item.data,item.altezza,item.peso,item.eta,item.pressioneMin,item.pressioneMax,item.cid)">
       <ion-card-header>
         <ion-card-title>Altezza :{{item.altezza}}</ion-card-title>
