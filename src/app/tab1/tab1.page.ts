@@ -131,7 +131,7 @@ export class Tab1Page implements OnInit{
     }else{
       const alert = await this.alertController.create({
         header: data,
-        message:"Altezza: " +altezza+"\nPeso: "+peso+"\nEtà: "+eta+"\nPressione min: "+pressioneMin+"\nPressione max: "+pressioneMax,
+        message:"Heigth: " +altezza+"<br>Weigth: "+peso+"<br>Età: "+eta+"<br>Min pressure: "+pressioneMin+"<br>Max pressure: "+pressioneMax,
       })
       await alert.present();
       await alert.onDidDismiss();

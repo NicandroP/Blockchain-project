@@ -65,19 +65,19 @@ export class AppComponent implements OnInit {
     }
 
     const alert = await this.alertController.create({
-        header: 'Benvenuto!',
-        subHeader: 'Sei uno scrittore o un lettore?',
+        header: 'Welcome!',
+        subHeader: 'Are you writer or reader?',
         backdropDismiss:false,
         buttons:[
           {
-            text: 'Scrittore',
+            text: 'Writer',
             handler: () => {       
               Preferences.set({key:"AppMode", value:"writer"})
               console.log(Preferences.get({key:"AppMode"}))
             },
           },
           {
-            text:'Lettore',
+            text:'Reader',
             handler: () => {
               Preferences.set({key:"AppMode", value:"reader"})
               console.log(Preferences.get({key:"AppMode"}))
@@ -103,23 +103,20 @@ export class AppComponent implements OnInit {
     }
 
 
-
-
     return
-
 
   }
 
   async firstRunWriter() {
 
     const alert = await this.alertController.create({
-      header: "Hai già un altro dispositivo scrittore?",
+      header: "Do you already have another writer device?",
       subHeader:"",
       message:"",
       backdropDismiss:false,
       buttons:[
         {
-          text: 'Si',
+          text: 'Yes',
           handler: async () => {       
             await this.newWriterDevice()
           },
@@ -136,9 +133,9 @@ export class AppComponent implements OnInit {
             Preferences.set({key: "Password", value: password})
             //TODO GENERATORE PASSWORD E SALVARLA IN DB LOCALE
             const alertPass = await this.alertController.create({
-                header: "SALVA INFORMAZIONI KEY",
-                subHeader: "",
-                message: "La tua chiave pubblica da fornire ai lettori è: " + newKey.pinata_api_key + "<br> La tua password è: " + password,
+                header: "Those are your credential!",
+                subHeader: "You can always retrieve them from settings page",
+                message: "Your public key to provide to readers is: " + newKey.pinata_api_key + "<br> Your password is: " + password,
                 buttons:[{text:"OK"}],
                 backdropDismiss:false,
               })
@@ -157,7 +154,7 @@ export class AppComponent implements OnInit {
 
   async newWriterDevice() {
     const alert = await this.alertController.create({
-      header: "Imposta la chiave pubblica, la chiave privata e la password dell'altro dispositivo",
+      header: "Set your public key, private key and password of the other device",
       inputs: [
         {
           name: "chiave_pubblica",
@@ -171,7 +168,7 @@ export class AppComponent implements OnInit {
         },
         {
           name: "password_inserita",
-          placeholder:"PASSWORD"
+          placeholder:"Password"
         }
 
       ],
@@ -190,7 +187,7 @@ export class AppComponent implements OnInit {
               return 
             } else {
               const alertERROR = await this.alertController.create({
-                header: "Inserire tutti i valori richiesti!",
+                header: "Insert all required values!",
                 backdropDismiss:false,
                 buttons:[{
                   text: "Ok"
@@ -221,24 +218,24 @@ export class AppComponent implements OnInit {
         await this.pinataHTTP.setPrivateKey("8fdac041e843d680f1d436a783fae0a6f610558479dce3906c144e60394650eb")
 
         const alert = await this.alertController.create({
-          header: "Imposta la chiave e la password fornite dallo scrittore",
+          header: "Set key and password provided by writer",
           backdropDismiss:false,
           inputs: [
             {
               name: "chiave_pubblica",
-              placeholder:"CHIAVE"
+              placeholder:"Key"
               
             },
             
             {
               name: "password_inserita",
-              placeholder:"PASSWORD"
+              placeholder:"Password"
             }
 
           ],
           buttons:[
             {
-              text: "OK",
+              text: "Ok",
               handler: async (data: { chiave_pubblica: string; password_inserita: string; }) => {
                 if (data.chiave_pubblica != "" && data.password_inserita != "") {
                   console.log(data.chiave_pubblica)
@@ -248,7 +245,7 @@ export class AppComponent implements OnInit {
                   return 
                 } else {
                   const alertERROR = await this.alertController.create({
-                    header: "Inserire entrambi i valori richiesti!",
+                    header: "Insert both required values!",
                     backdropDismiss:false,
                     buttons:[{
                       text: "Ok"
