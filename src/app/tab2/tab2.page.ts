@@ -48,7 +48,7 @@ export class Tab2Page implements OnInit {
       //console.log(plaintext);
       
       const loading = await this.alertController.create({
-        message:"uploading"
+        message:"Uploading"
       })
       loading.present()
       console.log((await this.pinataHTTP.uploadJSON(JSONToUpload)).status)
