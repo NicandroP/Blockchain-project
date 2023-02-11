@@ -67,6 +67,7 @@ export class AppComponent implements OnInit {
     const alert = await this.alertController.create({
         header: 'Benvenuto!',
         subHeader: 'Sei uno scrittore o un lettore?',
+        backdropDismiss:false,
         buttons:[
           {
             text: 'Scrittore',
@@ -115,6 +116,7 @@ export class AppComponent implements OnInit {
       header: "Hai già un altro dispositivo scrittore?",
       subHeader:"",
       message:"",
+      backdropDismiss:false,
       buttons:[
         {
           text: 'Si',
@@ -137,7 +139,8 @@ export class AppComponent implements OnInit {
                 header: "SALVA INFORMAZIONI KEY",
                 subHeader: "",
                 message: "La tua chiave pubblica da fornire ai lettori è: " + newKey.pinata_api_key + "<br> La tua password è: " + password,
-                buttons:[{text:"OK"}]
+                buttons:[{text:"OK"}],
+                backdropDismiss:false,
               })
             await alertPass.present();
             await alertPass.onDidDismiss();
@@ -172,6 +175,7 @@ export class AppComponent implements OnInit {
         }
 
       ],
+      backdropDismiss:false,
       buttons:[
         {
           text: "OK",
@@ -187,6 +191,7 @@ export class AppComponent implements OnInit {
             } else {
               const alertERROR = await this.alertController.create({
                 header: "Inserire tutti i valori richiesti!",
+                backdropDismiss:false,
                 buttons:[{
                   text: "Ok"
                 }]
@@ -217,6 +222,7 @@ export class AppComponent implements OnInit {
 
         const alert = await this.alertController.create({
           header: "Imposta la chiave e la password fornite dallo scrittore",
+          backdropDismiss:false,
           inputs: [
             {
               name: "chiave_pubblica",
@@ -243,6 +249,7 @@ export class AppComponent implements OnInit {
                 } else {
                   const alertERROR = await this.alertController.create({
                     header: "Inserire entrambi i valori richiesti!",
+                    backdropDismiss:false,
                     buttons:[{
                       text: "Ok"
                     }]

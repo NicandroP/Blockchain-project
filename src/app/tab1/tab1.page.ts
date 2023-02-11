@@ -6,6 +6,7 @@ import { Preferences } from '@capacitor/preferences';
 import { AlertController } from '@ionic/angular';
 import * as crypto from 'crypto-js';
 import moment from 'moment';
+import { Chart } from 'chart.js';
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
@@ -39,7 +40,7 @@ export class Tab1Page implements OnInit{
     let elementCount=urls.count
     console.log("Files pinnati su pinata: "+elementCount)
     await Preferences.set({key: "pinnedFiles", value:elementCount})
-    if(elementCount>0){this.elements=true}
+    if(elementCount>0){this.elements=true}else{this.elements=false}
 
     //page 1 doesnt refresh by mooving between tabs if files didn't change
     for(let i=0;i<urls.count;i++){
@@ -114,8 +115,7 @@ export class Tab1Page implements OnInit{
     if(appMode.value=="writer"){
       const alert = await this.alertController.create({
         header: data,
-        subHeader: altezza,
-        message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax,
+        message:"Altezza: " +altezza+"<br>Peso: "+peso+"<br>Età: "+eta+"<br>Pressione min: "+pressioneMin+"<br>Pressione max: "+pressioneMax,
         buttons: [
           {
             text: 'Delete',
@@ -131,8 +131,7 @@ export class Tab1Page implements OnInit{
     }else{
       const alert = await this.alertController.create({
         header: data,
-        subHeader: altezza,
-        message:peso+" "+eta+" "+pressioneMin+" "+pressioneMax,
+        message:"Altezza: " +altezza+"\nPeso: "+peso+"\nEtà: "+eta+"\nPressione min: "+pressioneMin+"\nPressione max: "+pressioneMax,
       })
       await alert.present();
       await alert.onDidDismiss();

@@ -1,18 +1,40 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Tab 3
+      Settings
     </ion-title>
   </ion-toolbar>
 </ion-header>
+<ion-grid>
 
-<ion-content [fullscreen]="true">
-  <ion-text>{{publicKey}}</ion-text>
-  <ion-text>{{password}}</ion-text>
-  
-</ion-content>
+  <ion-row>
+    <ion-col >
+      <ion-list>
+        <ion-item lines="none">
+          <ion-text *ngIf="writer;else elseblock">Public key: {{publicKey}}</ion-text>
+          <ng-template  #elseblock>
+            <ion-text>Writer public key: {{writerPublicKey}}</ion-text>
+          </ng-template>
+        </ion-item>
+        
+        <ion-item lines="none" *ngIf="writer">
+          <ion-text style="word-break: break-all;">
+            Private key: {{privateKey}}  
+          </ion-text>
+            
+        </ion-item>
+        <ion-item lines="none">Password: {{password}}</ion-item>
+        <ion-row class="ion-justify-content-center">
+          <ion-button color="primary" shape="round" (click)="logoutButton()">Logout</ion-button>
+        </ion-row>
+        
+        
+      </ion-list>
+      
+      
+        
+    </ion-col>
+  </ion-row>
+</ion-grid>
 
-<ion-content>
-  <button ion-button (click)="logoutButton()">Logout</button>
-</ion-content>
 

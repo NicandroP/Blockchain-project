@@ -29,9 +29,9 @@ export class Tab2Page implements OnInit {
 
 
   async clickUpload() {
-    if(this.altezza=='' && this.peso=='' && this.eta=='' && this.pressioneMin=='' && this.pressioneMax==''){
+    if(this.altezza=='' || this.peso=='' || this.eta=='' || this.pressioneMin=='' || this.pressioneMax==''){
       const alert = await this.alertController.create({
-        message:"Insert at least one value"
+        message:"Insert all values"
       })
       await alert.present();
       await alert.onDidDismiss();

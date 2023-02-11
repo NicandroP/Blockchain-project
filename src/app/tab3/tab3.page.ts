@@ -12,7 +12,7 @@ export class Tab3Page implements OnInit {
   privateKey: any
   password: any
   writerPublicKey: any
-
+  writer:any
   constructor() {}
 
   async ngOnInit(){}
@@ -21,11 +21,12 @@ export class Tab3Page implements OnInit {
     this.appMode = await Preferences.get({key:"AppMode"})
 
     if (this.appMode.value  == "reader") {
-
+      this.writer=false
       this.writerPublicKey = await (await Preferences.get({key:"WriterPublicKey"})).value
       this.password = await (await Preferences.get({key:"Password"})).value
 
     } else {
+      this.writer=true
       this.publicKey = await (await Preferences.get({key:"PublicKey"})).value
       this.privateKey = await (await Preferences.get({key:"PrivateKey"})).value
       this.password = await (await Preferences.get({key:"Password"})).value
