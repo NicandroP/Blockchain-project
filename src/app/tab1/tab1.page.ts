@@ -110,12 +110,12 @@ export class Tab1Page implements OnInit{
     return true;
   }
 
-  async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any,cid:any){
+  async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any,glucose:any,cid:any){
     let appMode=await Preferences.get({key: "AppMode"})
     if(appMode.value=="writer"){
       const alert = await this.alertController.create({
         header: data,
-        message:"Altezza: " +altezza+"<br>Peso: "+peso+"<br>Età: "+eta+"<br>Pressione min: "+pressioneMin+"<br>Pressione max: "+pressioneMax,
+        message:"Heigth: " +altezza+"<br>Weigth: "+peso+"<br>Age: "+eta+"<br>Min pressure: "+pressioneMin+"<br>Max pressure: "+pressioneMax+"<br>Glucose: "+glucose,
         buttons: [
           {
             text: 'Delete',
@@ -131,7 +131,7 @@ export class Tab1Page implements OnInit{
     }else{
       const alert = await this.alertController.create({
         header: data,
-        message:"Heigth: " +altezza+"<br>Weigth: "+peso+"<br>Età: "+eta+"<br>Min pressure: "+pressioneMin+"<br>Max pressure: "+pressioneMax,
+        message:"Heigth: " +altezza+"<br>Weigth: "+peso+"<br>Età: "+eta+"<br>Min pressure: "+pressioneMin+"<br>Max pressure: "+pressioneMax+"<br>Glucose: "+glucose,
       })
       await alert.present();
       await alert.onDidDismiss();
@@ -145,6 +145,9 @@ export class Tab1Page implements OnInit{
     console.log("Removed filter")
     this.tempArray=this.array
     console.log(this.tempArray)
+  }
+  async reload(){
+    window.location.reload()
   }
   async onChange(){
     let value=this.filterValue

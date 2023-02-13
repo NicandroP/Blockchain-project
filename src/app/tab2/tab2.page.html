@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-content *ngIf="readOnlyMode">
-  SEI UN LETTORE 
+  You are reader 
 </ion-content>
 <div *ngIf="readOnlyMode;else elseblock"></div>
 <ion-grid>
@@ -42,6 +42,11 @@
         <ion-item>
           <ion-label fixed>Max pressure (mmHg)</ion-label>
           <ion-input [(ngModel)]="pressioneMax" value = "" (keypress)="numberOnlyValidation($event)"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label fixed>Blood Glucose (mg/dL)</ion-label>
+          <ion-input [(ngModel)]="glucose" value = "" (keypress)="numberOnlyValidation($event)"></ion-input>
         </ion-item>
     
       </ion-list>

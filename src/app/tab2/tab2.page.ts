@@ -15,6 +15,7 @@ export class Tab2Page implements OnInit {
   eta= ""
   pressioneMin= ""
   pressioneMax= ""
+  glucose=""
   readOnlyMode = false
   constructor(private pinataHTTP: PinataHTTPService,private alertController: AlertController) {}
   
@@ -29,7 +30,7 @@ export class Tab2Page implements OnInit {
 
 
   async clickUpload() {
-    if(this.altezza=='' || this.peso=='' || this.eta=='' || this.pressioneMin=='' || this.pressioneMax==''){
+    if(this.altezza=='' || this.peso=='' || this.eta=='' || this.pressioneMin=='' || this.pressioneMax=='' || this.glucose==''){
       const alert = await this.alertController.create({
         message:"Insert all values"
       })
@@ -60,6 +61,7 @@ export class Tab2Page implements OnInit {
       this.eta=""
       this.pressioneMin=""
       this.pressioneMax=""
+      this.glucose=""
     }
 
     
@@ -95,6 +97,7 @@ export class Tab2Page implements OnInit {
       "eta" : this.eta,
       "pressioneMin" : this.pressioneMin,
       "pressioneMax" : this.pressioneMax,
+      "glucose" : this.glucose,
       "data" : date2
     })
     var encrypted = crypto.AES.encrypt(content.toString(), pw);
