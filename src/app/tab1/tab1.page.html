@@ -9,7 +9,7 @@
 <ion-grid>
 
   <ion-row *ngIf="elements">
-    <ion-col size="14"  class="ion-justify-content-center">
+    <ion-col size="12"  class="ion-justify-content-center">
 
       <ion-row style="align-items: center;display: flex;">
         <ion-col size="8">
@@ -63,7 +63,11 @@
     <ion-col size="12"  class="ion-justify-content-center">
       <div *ngIf="elements;else elseblock"></div>
       <ng-template #elseblock>
-        <ion-row>No records present</ion-row>
+        <ion-row *ngIf="erroreHttp; else elseHttp">Something went wrong! Try to refresh.</ion-row>
+        <ng-template #elseHttp>
+          No records present
+        </ng-template>
+        
         <ion-row class="ion-justify-content-center">
           <ion-button size="small" (click)='reload()'>
             <ion-icon name="refresh"></ion-icon>

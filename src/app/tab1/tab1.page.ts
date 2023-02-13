@@ -13,6 +13,7 @@ import { Chart } from 'chart.js';
   styleUrls: ['tab1.page.scss']
 })
 export class Tab1Page implements OnInit{
+  erroreHttp=false
   tempArray:any
   array:any
   elements=false
@@ -37,6 +38,7 @@ export class Tab1Page implements OnInit{
     
     this.newCids=new Array()
     const urls = await this.pinataHTTP.getCIDS()
+
     let elementCount=urls.count
     console.log("Files pinnati su pinata: "+elementCount)
     await Preferences.set({key: "pinnedFiles", value:elementCount})
@@ -82,10 +84,14 @@ export class Tab1Page implements OnInit{
           console.log(jsonPlaintext);
           jsonPlaintext.cid=url
           this.array.unshift(jsonPlaintext)
+          this.erroreHttp=false
           
-          
-        }).catch(error=>{
+        }).catch(async error=>{
           console.log("ERRORE: "+error)
+          this.erroreHttp=true
+          this.elements=false
+          await Preferences.set({key: "pinnedFiles", value:"0"})
+          await Preferences.set({key: "storedCids",value:""})
         })
       
       }
@@ -93,9 +99,7 @@ export class Tab1Page implements OnInit{
       this.isLoading=false
       console.log("chiamata axios terminata")
     }
-    
-
-    
+       
     
   }
 
