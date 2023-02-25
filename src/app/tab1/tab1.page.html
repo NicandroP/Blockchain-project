@@ -5,15 +5,15 @@
     </ion-title>
   </ion-toolbar>
 </ion-header>
+<ion-content>
+<ion-grid >
 
-<ion-grid>
+  <ion-row *ngIf="elements else elseblock;" class="ion-justify-content-center">
+    <ion-col size-lg="4" size-md="8" size-sm="10" size="12" class="ion-justify-content-center">
 
-  <ion-row *ngIf="elements">
-    <ion-col size="12"  class="ion-justify-content-center">
-
-      <ion-row style="align-items: center;display: flex;">
+      <ion-row style="align-items: center;display: flex; ">
         <ion-col size="8">
-          <ion-select (ionChange)="onChange()" [(ngModel)]="filterValue" interface="popover" placeholder="Filter by date">
+          <ion-select  (ionChange)="onChange()" [(ngModel)]="filterValue" interface="popover" placeholder="Filter by date">
             <ion-select-option value="lastDay">Last day</ion-select-option>
             <ion-select-option value="lastWeek">Last week</ion-select-option>
             <ion-select-option value="lastMonth">Last month</ion-select-option>
@@ -21,13 +21,13 @@
         </ion-col>
         <ion-col size="2">
           <div *ngIf="filterIsActive">
-            <ion-button size="small" (click)='removeSelection()'>
+            <ion-button  size="small" (click)='removeSelection()'>
               <ion-icon name="close"></ion-icon>
             </ion-button>
           </div>
         </ion-col>
         <ion-col size="2">
-          <ion-button size="small" (click)='reload()'>
+          <ion-button  size="small" (click)='reload()'>
             <ion-icon name="refresh"></ion-icon>
           </ion-button>
         </ion-col>
@@ -39,8 +39,8 @@
       </ion-row>
       
     
-      <ion-item lines="none" *ngFor="let item of tempArray">
-          <ion-card button button (click)="showCardDetails(item.data,item.altezza,item.peso,item.eta,item.pressioneMin,item.pressioneMax,item.glucose,item.cid)">
+      <ion-item  lines="none" *ngFor="let item of tempArray">
+          <ion-card style="width: 100%;" button button (click)="showCardDetails(item.data,item.altezza,item.peso,item.eta,item.pressioneMin,item.pressioneMax,item.glucose,item.cid)">
             <ion-card-header>
               <ion-card-title>Date: {{item.data}}</ion-card-title>
               
@@ -57,28 +57,34 @@
   </ion-row>
   
 
-</ion-grid>
-<ion-grid>
-  <ion-row>
-    <ion-col size="12"  class="ion-justify-content-center">
-      <div *ngIf="elements;else elseblock"></div>
-      <ng-template #elseblock>
-        <ion-row *ngIf="erroreHttp; else elseHttp">Something went wrong! Try to refresh.</ion-row>
-        <ng-template #elseHttp>
-          No records present
-        </ng-template>
+  <ng-template #elseblock style="align-items: center;display: flex;" class="ion-justify-content-center">
+  <ion-row class="ion-justify-content-center">
+    <ion-col size-lg="4" size-md="8" size-sm="10" size="12" class="ion-justify-content-center">
+      <ion-row style="align-items: center;display: flex;" class="ion-justify-content-center">
         
-        <ion-row class="ion-justify-content-center">
+          
+            <ion-text *ngIf="erroreHttp; else elseHttp">
+              Something went wrong! Try to refresh. 
+            </ion-text>
+          <ng-template #elseHttp>
+              <ion-text>No records present </ion-text> 
+          </ng-template>
+        
+      
+        
+        
           <ion-button size="small" (click)='reload()'>
             <ion-icon name="refresh"></ion-icon>
           </ion-button>
-        </ion-row>
         
-      </ng-template>
+
+    </ion-row>
     </ion-col>
   </ion-row>
+</ng-template>
 </ion-grid>
 
+</ion-content>
 
 
 
