@@ -16,7 +16,7 @@ export class Tab3Page implements OnInit {
   constructor() {}
 
   async ngOnInit(){}
-
+  //Recupero variabili per la visualizzazione a front-end per la visualizzare delle informazioni del nodo
   async ionViewWillEnter() {
     this.appMode = await Preferences.get({key:"AppMode"})
 

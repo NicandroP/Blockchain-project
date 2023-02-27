@@ -14,13 +14,8 @@ export class PinataHTTPService  {
   pinata_api_key: any
   pinata_secret_api_key: any
 
-  
   constructor(private http: HttpClient) {
     
-  }
- 
-  changeAuthKey(key:any) {
-    this.auth = key
   }
 
   setPublicKey(key:any){
@@ -31,24 +26,7 @@ export class PinataHTTPService  {
     this.pinata_secret_api_key = key
   }
 
-  async tryToAuth(){
-    var config = {
-      method: 'get',
-      url: 'https://api.pinata.cloud/data/testAuthentication',
-      headers: { 
-        
-          'pinata_api_key' : '21355483b71d62be07f0',
-          'pinata_secret_api_key':'a200c296d03dea41340442aeac74291645b4d28d9acc63d63537cc727d193dca'
-      
-        
-      }
-    };
-    
-    const res = await axios(config)
-    
-    console.log(res);
-  }
-
+  //Generazione nuova chiave scrittore tramite API Pinata
   async generateNewAdminKey() {
     
     var data = JSON.stringify({
@@ -92,24 +70,9 @@ export class PinataHTTPService  {
 
   }
 
-  async getAllKeys() {
-    var config = {
-      method: 'get',
-      url: 'https://api.pinata.cloud/users/apiKeys',
-      headers: { 
-        'pinata_api_key' : this.pinata_api_key,
-        'pinata_secret_api_key' : this.pinata_secret_api_key
-      }
-    };
-
-    return await axios(config)
-
-    
-  }
-
+  //Recupero di tutte le cids, filtrate utilizzando la public key del writer
   async getCIDS() {
     var date1 = new Date()
-    //TODO CAMBIARE IN PUBLIC KEY DELL'ID DA LEGGERE E NON LA PROPRIA 
     var appMode = await Preferences.get({key:'AppMode'})
     var writerPubKey
     if (appMode.value == "reader") {
@@ -133,7 +96,6 @@ export class PinataHTTPService  {
       }
     
     };
-    //?status=pinned
    
     var response = await axios(config)
     var date1 = new Date()
@@ -141,8 +103,8 @@ export class PinataHTTPService  {
     return response.data
   }
 
+  //Caricamento file su Pinata
   async uploadJSON(fileToUpload: any) {
-    //TODO ENCRYPTION
     var config = {
       method: 'post',
       url: 'https://api.pinata.cloud/pinning/pinJSONToIPFS',
@@ -158,16 +120,7 @@ export class PinataHTTPService  {
     return await axios(config)
   }
   
-  async getFileByCID(cid:any){
-    return new Promise((resolve)=>{
-      this.http.get('https://ipfs.io/ipfs/'+cid).subscribe({
-        next:async data=>{
-          resolve(data)
-        }
-      })
-    })
-  }
-
+  //Rimozione file da Pinata
   async removeFile(fileToRemove:any){
     var config = {
       method: 'delete',
@@ -181,6 +134,5 @@ export class PinataHTTPService  {
     const res = await axios(config);
     console.log("File deleted: "+res.data)
   }
-  
     
 }

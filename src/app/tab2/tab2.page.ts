@@ -28,7 +28,8 @@ export class Tab2Page implements OnInit {
     }
   }
 
-
+  //Caricamento file Json su pinata tramite la funzione uploadJSON che utilizza la API di Pinata. Il file Json
+  //è creato attraverso la funzione createJSON() 
   async clickUpload() {
     if(this.altezza=='' || this.peso=='' || this.eta=='' || this.pressioneMin=='' || this.pressioneMax=='' || this.glucose==''){
       const alert = await this.alertController.create({
@@ -67,13 +68,13 @@ export class Tab2Page implements OnInit {
     
 
   }
-  
+  //Creazione file Json da caricare su Pinata, composto dai valori inseriti dall'utente nel form
   async createJSON() {
     var pKey=await Preferences.get({key:'PublicKey'})
     var password=await Preferences.get({key:'Password'})
     var pw=password.value+""
     
-    //displaying data in better way by adding 0 to 1 length values
+    //Data visualizzata in modo migliore
     var date=new Date()
     var day=date.getDate().toString()
     if(day.length==1){day="0"+day}
@@ -122,6 +123,7 @@ export class Tab2Page implements OnInit {
 
     return JSONToUpload
   }
+  //validatore che cancella l'inserimento di eventuali caratteri (solo numeri ammessi)
   numberOnlyValidation(event: any) {
     const pattern = /[0-9.,]/;
     let inputChar = String.fromCharCode(event.charCode);

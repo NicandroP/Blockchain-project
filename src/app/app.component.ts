@@ -17,18 +17,21 @@ export class AppComponent implements OnInit {
     
   }
   async ngOnInit(){
-    //Preferences.clear()
     await this.chekcFirstRun()
     this.showTabs = true
 
   }
-
+  //Controlli per il login
   async chekcFirstRun() {
 
     var firstRun = await Preferences.get({key: "firstRun"})
 
     if (firstRun.value == "true") {
-      //Non fare niente, non dovrebbe mai essere TRUE qui
+      //Utente ha aggiornato involontariamente, non dovrebbe mai essere TRUE qui, rifaccio come firstRun
+      Preferences.clear()
+      await Preferences.set({key: "firstRun", value:"true"})
+      await this.firstRunChoice()
+      await Preferences.set({key: "firstRun", value: "false"})
     } else if (firstRun.value == "false") {
       this.showTabs = true
       //Imposto valori chiave pubblica e privata per autenticazione all'interno del pinataHTTPService
@@ -37,21 +40,20 @@ export class AppComponent implements OnInit {
       this.pinataHTTP.setPublicKey(publicKey.value)
       this.pinataHTTP.setPrivateKey(privateKey.value)
     } else {
-
+      
       await Preferences.set({key: "firstRun", value:"true"})
       await this.firstRunChoice()
-
+      await Preferences.set({key: "firstRun", value:"false"})
       
     }
 
   }
-
+  //Permette all'utente di scegliere se diventare nodo lettore o nodo scrittore
   async firstRunChoice() {
-    await Preferences.set({key: "firstRun", value: "false"})
     const publicKey = await Preferences.get({key: "PublicKey"})
     const privateKey = await Preferences.get({key: "PrivateKey"})
     if (publicKey.value == null && privateKey.value == null) {
-      //INSERISCO CHIAVE ADMIN DI DEFAULT PER PRIME OPERAZIONI
+      //Inserisco chiave admin di default per prime operazioni
       await Preferences.set({key:"PublicKey", value:"3f4bac4ade0bd0e5bd03"})
       await Preferences.set({key:"PrivateKey", value:"895f7a0e1eae275dd54984a31feb82d715b50352fdf2640850a9aecbad9d50dc"})
       this.pinataHTTP.setPublicKey("3f4bac4ade0bd0e5bd03")
@@ -63,7 +65,7 @@ export class AppComponent implements OnInit {
       this.pinataHTTP.setPrivateKey(privateKey.value)
       
     }
-
+    //Generazione alert per scelta tipo di nodo
     const alert = await this.alertController.create({
         header: 'Welcome!',
         subHeader: 'Are you writer or reader?',
@@ -99,16 +101,13 @@ export class AppComponent implements OnInit {
       return 
     } else {
       return
-      //Niente, non deve entrare qui
+      
     }
-
-
     return
-
   }
-
+  //Gestione nodo writer
   async firstRunWriter() {
-
+    //Generazione alert che permette o di creare un nuovo nodo da zero, oppure lanciare metodo newWriterDevice
     const alert = await this.alertController.create({
       header: "Do you already have another writer device?",
       subHeader:"",
@@ -131,7 +130,6 @@ export class AppComponent implements OnInit {
             Preferences.set({key: "PrivateKey", value: newKey.pinata_api_secret})
             let password = this.crea_password()
             Preferences.set({key: "Password", value: password})
-            //TODO GENERATORE PASSWORD E SALVARLA IN DB LOCALE
             const alertPass = await this.alertController.create({
                 header: "Those are your credential!",
                 subHeader: "You can always retrieve them from settings page",
@@ -147,11 +145,9 @@ export class AppComponent implements OnInit {
     })
     await alert.present();
     await alert.onDidDismiss();
-
-    
       return 
   }
-
+  //Gestione nuovo dispositivo con stesse credenziali writer
   async newWriterDevice() {
     const alert = await this.alertController.create({
       header: "Set your public key, private key and password of the other device",
@@ -208,8 +204,7 @@ export class AppComponent implements OnInit {
     await alert.onDidDismiss();
 
   }
-
-
+  //Configurazione nodo reader
   async firstRunReader() {
         //Inserisco valori per reader di default 
         await Preferences.set({key:"PublicKey",value:"59fea9783aa051945645"})
@@ -265,7 +260,7 @@ export class AppComponent implements OnInit {
         await alert.present();
         await alert.onDidDismiss();
   }
-
+  //Generazione automatica password per nodi writer
   crea_password(){
 
     var elencoCaratteri="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";

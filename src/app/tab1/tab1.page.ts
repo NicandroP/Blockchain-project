@@ -25,7 +25,7 @@ export class Tab1Page implements OnInit{
   constructor(private alertController: AlertController,private pinataHTTP: PinataHTTPService, private storage: LocalStorageService ) {
 
   }
-
+  
   async ngOnInit() {
     this.array=new Array()
     this.storedCids=new Array()
@@ -34,17 +34,18 @@ export class Tab1Page implements OnInit{
     
   }
 
+  
   async ionViewWillEnter() {
-    
     this.newCids=new Array()
+    //Chiamata API della funzione getCIDS, in modo da controllare se la lista dei file è cambiata, e in tal caso aggiornare i files mostrati a schermo
+    //Effettuiamo questo controllo perchè in questo modo possiamo effettuare una chiamata Get solo se necessario, non sovraccaricando il sistema
+    //di operazioni e non c'è il rischio che le chiamate non vengano rifiutate da Pinata a causa di troppe richieste
     const urls = await this.pinataHTTP.getCIDS()
-
     let elementCount=urls.count
     console.log("Files pinnati su pinata: "+elementCount)
     await Preferences.set({key: "pinnedFiles", value:elementCount})
     if(elementCount>0){this.elements=true}else{this.elements=false}
 
-    //page 1 doesnt refresh by mooving between tabs if files didn't change
     for(let i=0;i<urls.count;i++){
       this.newCids.push(urls.rows[i].ipfs_pin_hash)
     }
@@ -59,6 +60,7 @@ export class Tab1Page implements OnInit{
       console.log("cids uguali")
       
     }else{
+      //Se la lista dei file è cambiata rispetto a quella memorizzata, eseguo una chiamata axios per riscaricare i file
       console.log("cids diversi")
       this.array=[]
       await Preferences.set({key: "storedCids", value:this.newCids})
@@ -78,6 +80,7 @@ export class Tab1Page implements OnInit{
           console.log(response.data.encryptedString)
           var password=await Preferences.get({key:'Password'})
           var pw=password.value+""
+          //I file scaricati verranno decrittografati utilizzando la password memorizzata in memoria
           var bytes = crypto.AES.decrypt(response.data.encryptedString, pw);
           var plaintext = bytes.toString(crypto.enc.Utf8);
           var jsonPlaintext=JSON.parse(plaintext)
@@ -102,7 +105,7 @@ export class Tab1Page implements OnInit{
        
     
   }
-
+  //funzione per controllare se due array sono uguali, usata per controllare se l'array di file memorizzato in locale è uguale a quello di Pinata
   arraysEqual(a:any, b:any) {
     if (a == null || b == null) return false;
     if (a.length !== b.length) return false;
@@ -114,6 +117,7 @@ export class Tab1Page implements OnInit{
     return true;
   }
 
+  //funzione che permette di mostrare i dettagli di una card, aprendo un alert
   async showCardDetails(data:any,altezza:any,peso:any,eta:any,pressioneMin:any,pressioneMax:any,glucose:any,cid:any){
     let appMode=await Preferences.get({key: "AppMode"})
     if(appMode.value=="writer"){
@@ -142,7 +146,7 @@ export class Tab1Page implements OnInit{
     }
    
   }
-
+  //fimozione filtro
   async removeSelection(){
     this.filterIsActive=false
     this.filterValue=null
@@ -153,6 +157,7 @@ export class Tab1Page implements OnInit{
   async reload(){
     window.location.reload()
   }
+  //funzione che permette di gestire i filtri temporali, viene utilizzato un array temporaneo che memorizza solo i files filtrati, e viene mostrato
   async onChange(){
     let value=this.filterValue
     if(this.filterValue=="lastDay" || this.filterValue=="lastWeek" || this.filterValue=="lastMonth"){
@@ -164,7 +169,6 @@ export class Tab1Page implements OnInit{
       var formattedCurrentTime = moment(currentTime).format('YYYYMMDD');
       
       var newArray = this.array.filter(function (el:any) {
-        let dataProva=new Date("01-01-2023")
         let data=el.data.split(",")[0]
         let data2=new Date(data.split("/")[1]+"-"+data.split("/")[0]+"-"+data.split("/")[2])
         var data2Formatted=moment(data2).format('YYYYMMDD');
